@@ -28,8 +28,14 @@ const LastStepForm = () => {
     setInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+e.preventDefault()
+
+  }
+   
+
   return (
-    <form className="grid grid-cols-6 gap-4">
+    <form className="grid grid-cols-6 gap-4" onSubmit={handleSubmit}>
       <div className="flex justify-center col-span-6">
         <Avatar className="size-24">
           <AvatarImage
