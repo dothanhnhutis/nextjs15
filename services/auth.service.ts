@@ -23,9 +23,7 @@ export async function checkToken(token: string) {
 
 export async function confirmEmail(token: string) {
   try {
-    await authInstance.get("/confirm-email?token=" + token, {
-      cache: "no-cache",
-    });
+    await authInstance.get("/confirm-email?token=" + token);
     return true;
   } catch (error) {
     console.log("confirmEmail method error:", error);
