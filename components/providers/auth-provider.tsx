@@ -35,6 +35,7 @@ export const AuthProvider = ({
 
   const handleChangeEmail = async (email: string) => {
     await changeEmail(email);
+    
   };
 
   return (

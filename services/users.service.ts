@@ -39,7 +39,7 @@ export async function reSendVerifyEmail() {
 
 export async function changeEmail(email: string) {
   try {
-    await userInstance.post("/change-email", { email });
+    await userInstance.patch("/replace-email", { email });
   } catch (error) {
     console.log("changeEmail method error:", error);
   }

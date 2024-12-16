@@ -14,12 +14,13 @@ import {
 import { cn } from "@/lib/utils";
 import { LoaderPinwheelIcon } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
+import { changeEmail } from "@/services/users.service";
 
 const ReplaceEmailForm = ({ disabled }: { disabled?: boolean }) => {
   const [optenDialog, setOptenDialog] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
-  const { changeEmail, currentUser } = useAuth();
+  const {  currentUser } = useAuth();
   const [isPending, startTransition] = React.useTransition();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
