@@ -1,6 +1,6 @@
 import envs from "@/configs/envs";
 import { FetchApi } from "./fetch-api";
-import { User } from "@/schema/user.schema";
+import { UpdateProfile, User } from "@/schema/user.schema";
 
 const userInstance = new FetchApi({
   baseUrl: envs.NEXT_PUBLIC_SERVER_URL + "/api/v1/users",
@@ -42,5 +42,13 @@ export async function changeEmail(email: string) {
     await userInstance.patch("/replace-email", { email });
   } catch (error) {
     console.log("changeEmail method error:", error);
+  }
+}
+
+export async function updateProfile(input: UpdateProfile) {
+  try {
+    await userInstance.put("", input);
+  } catch (error) {
+    console.log("updateProfile method error:", error);
   }
 }

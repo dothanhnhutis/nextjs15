@@ -3,8 +3,13 @@ import envs from "@/configs/envs";
 import { verifyJWT } from "@/lib/jwt";
 import { UserToken } from "@/schema/user.schema";
 import { confirmEmail } from "@/services/auth.service";
+import { Metadata } from "next";
 import Link from "next/link";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "Xác Thực Tài Khoản",
+};
 
 const ConfirmEmailPage = async ({
   searchParams,

@@ -8,7 +8,10 @@ import React from "react";
 import { useAuth } from "@/components/providers/auth-provider";
 import SendVerifyEmailBtn from "./send-verify-btn";
 import ReplaceEmailForm from "./replace-email-form";
-
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Xác Thực Email",
+};
 const VerifyEmailPage = () => {
   const { currentUser } = useAuth();
 
