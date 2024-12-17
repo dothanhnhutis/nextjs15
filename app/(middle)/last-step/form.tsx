@@ -39,6 +39,12 @@ const LastStepForm = () => {
     });
   };
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+e.preventDefault()
+
+  }
+   
+
   return (
     <form className="grid grid-cols-6 gap-4" onSubmit={handleSubmit}>
       <div className="flex justify-center col-span-6">
