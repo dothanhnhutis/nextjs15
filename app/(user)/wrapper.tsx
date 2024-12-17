@@ -11,11 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { DEFAULT_LOGOUT_REDIRECT } from "@/routes";
 import { signOut } from "@/services/users.service";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import {
   // BellIcon,
   CookieIcon,
@@ -253,6 +254,9 @@ const WrapperUserSiderbar = ({
             side="left"
             className="sm:hidden w-[280px] p-2"
           >
+            <VisuallyHidden.Root>
+              <SheetTitle></SheetTitle>
+            </VisuallyHidden.Root>
             <div className="flex items-center">
               <button
                 className="p-2 rounded-full hover:bg-accent"

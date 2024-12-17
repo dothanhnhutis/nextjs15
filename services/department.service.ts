@@ -27,3 +27,25 @@ export async function getDepartments(options?: Omit<RequestInit, "body">) {
     return [];
   }
 }
+
+export type Display = {
+  id: string;
+  content: string;
+  enable: boolean;
+  priority: number;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export async function getDisplaysOfDepartment(displayId: string) {
+  try {
+    const { data } = await departmentInstance.get<Display[]>(
+      `${displayId}/displays`
+    );
+    return data;
+  } catch (error: unknown) {
+    console.log(error);
+    return [];
+  }
+}

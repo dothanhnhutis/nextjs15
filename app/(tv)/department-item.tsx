@@ -1,26 +1,26 @@
 "use client";
 import { useTV } from "@/components/providers/tv-provider";
 import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import { PinIcon, PinOffIcon } from "lucide-react";
 import React from "react";
 
 const DepartmentItem = ({ id, name }: { id: string; name: string }) => {
-  const { departmentId, setDeparment, pinDepartmentId, setPinDeparment } =
-    useTV();
+  const { selectedId, setSelectedId, pinId, setPinId } = useTV();
   const handlePinDepartment = () => {
-    if (id == pinDepartmentId) {
-      setPinDeparment(null);
+    if (id == pinId) {
+      setPinId(null);
     } else {
-      setPinDeparment(id);
+      setPinId(id);
     }
   };
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
         asChild
-        isActive={departmentId == id}
+        isActive={selectedId == id}
         onClick={() => {
-          setDeparment(id);
+          setSelectedId(id);
         }}
       >
         <div className="flex items-center group/item">
@@ -28,9 +28,11 @@ const DepartmentItem = ({ id, name }: { id: string; name: string }) => {
           <button
             type="button"
             onClick={handlePinDepartment}
-            className="group-hover/item:block hidden"
+            className={cn(
+              pinId && pinId == id ? "" : "group-hover/item:block hidden"
+            )}
           >
-            {pinDepartmentId && pinDepartmentId == id ? (
+            {pinId && pinId == id ? (
               <PinOffIcon className="shrink-0 size-4" />
             ) : (
               <PinIcon className="shrink-0 size-4" />

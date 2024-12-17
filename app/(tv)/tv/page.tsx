@@ -1,8 +1,11 @@
-"use client";
 import React from "react";
-
+import Display from "./display";
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Phòng ban",
+};
 const TaskPage = () => {
-  return <div>asdsa</div>;
+  return <Display />;
 };
 
 export default TaskPage;

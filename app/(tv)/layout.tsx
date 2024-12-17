@@ -35,13 +35,9 @@ const TaskLayout = async ({
   });
 
   const pinDepartmentId = cookieStore.get("deparment:pin")?.value;
+
   return (
-    <TVProvider
-      pinDepartmentId={pinDepartmentId}
-      departmentId={
-        pinDepartmentId || departments.length == 0 ? null : departments[0].id
-      }
-    >
+    <TVProvider defaultPinId={pinDepartmentId} departments={departments}>
       <SidebarProvider defaultOpen={defaultOpen} className="bg-gray-100 z-[-2]">
         <Sidebar className="[&>div[data-sidebar='sidebar']]:bg-transparent bg-white">
           <SidebarHeader>
