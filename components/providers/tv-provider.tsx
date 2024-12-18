@@ -5,16 +5,17 @@ import { Department } from "@/services/department.service";
 import React from "react";
 import { Socket } from "socket.io-client";
 
-
-// import {
-//   AlertDialog,
-//   AlertDialogAction,
-//   AlertDialogContent,
-//   AlertDialogDescription,
-//   AlertDialogFooter,
-//   AlertDialogHeader,
-//   AlertDialogTitle,
-// } from "@/components/ui/alert-dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { audioPath } from "@/configs/constants";
 
 interface ITaskContext {
   connected: boolean;
@@ -24,8 +25,8 @@ interface ITaskContext {
   pinId: string | null;
   setPinId: (departmentId: string | null) => void;
   departmentsData: Department[];
-  isAudioAllowed:boolean
-  setAccessAudio: () => void
+  isAudioAllowed: boolean;
+  setAccessAudio: () => void;
 }
 const TVContext = React.createContext<ITaskContext | null>(null);
 
@@ -49,9 +50,9 @@ export function TVProvider({
   const [socket, setSocket] = React.useState<Socket | null>(null);
   const [connected, setConnected] = React.useState<boolean>(false);
 
-  const audioRef = React.useRef<HTMLAudioElement | null>(null);
-  const [isAudioAllowed, setIsAudioAllowed] = React.useState(audioRef.current == null ? false : true);
+  const [openDialog, setOpenDialog] = React.useState(true);
 
+  const [isAudioAllowed, setIsAudioAllowed] = React.useState(false);
 
   const [selectedId, setSelectedId] = React.useState<string | null>(
     defaultPinId || (departments.length == 0 ? null : departments[0].id)
@@ -59,11 +60,6 @@ export function TVProvider({
   const [pinId, setPinId] = React.useState<string | null>(defaultPinId ?? null);
 
   const [data] = React.useState<Department[]>(departments);
-
-  React.useEffect(() => {
-    const audio = new Audio("/mp3/bell.mp3");
-    audioRef.current = audio;
-  }, []);
 
   function onConnect() {
     console.log("onConnect");
@@ -99,33 +95,6 @@ export function TVProvider({
     };
   }, [socket]);
 
-  const handleCreateDisplay = (data: unknown) => {
-    console.log(data);
-    // const audio = new Audio("/mp3/bell.mp3")
-   
-   console.log(audioRef.current)
-    audioRef.current?.play().then(() => {
-      // audio.pause()
-      console.log("Audio permission granted");
-    }).catch(err => {
-      console.log(err)
-    });
-  };
-
-  React.useEffect(() => {
-    if (socket) {
-      socket.on("createDisplay", handleCreateDisplay);
-      // socket.on("emptyTask", onCreateTask);
-    }
-
-    return () => {
-      if (socket) {
-        socket.off("createDisplay", handleCreateDisplay);
-        // socket.off("emptyTask", onCreateTask);
-      }
-    };
-  }, [socket]);
-
   React.useEffect(() => {
     if (socket && selectedId) {
       socket.emit("joinDepartment", selectedId);
@@ -152,18 +121,18 @@ export function TVProvider({
   };
 
   const handleAccessAudio = () => {
-    const audio = new Audio("/mp3/bell.mp3");
-    audio.play()
+    const audio = new Audio(audioPath);
+    audio
+      .play()
       .then(() => {
-        audio.pause(); // Dừng ngay để tránh phát âm thanh không cần thiết
-        audioRef.current = audio; // Lưu tham chiếu audio
-        setIsAudioAllowed(true); // Đánh dấu đã cấp quyền
+        audio.pause();
+        setIsAudioAllowed(true);
         console.log("Quyền phát audio đã được cấp!");
       })
       .catch((err) => {
         console.error("Không thể xin quyền phát audio:", err);
       });
-  }
+  };
 
   return (
     <TVContext.Provider
@@ -176,27 +145,29 @@ export function TVProvider({
         setPinId: handleSetPin,
         departmentsData: data,
         isAudioAllowed,
-        setAccessAudio: handleAccessAudio
+        setAccessAudio: handleAccessAudio,
       }}
     >
-      <video muted={false} autoPlay >
-        <source src="https://www.youtube.com/watch?v=Ej7OAuVAAIM" type="video/mp4"/>
-      </video>
       {children}
 
-      {/* <AlertDialog open={!isAudioAllowed} onOpenChange={(v) => setIsAudioAllowed(!v)}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Trình duyệt của bạn không hỗ trợ phát âm thanh tự động</AlertDialogTitle>
-          <AlertDialogDescription>
-            {`Phát âm thanh tự động giúp cho bạn nhận được âm thanh thông báo. Bấm 'Cho phép' để nhận thông báo có âm thanh`}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogAction onClick={handleAccessPlayAudio}>Chấp nhận</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog> */}
+      <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Trình duyệt của bạn không hỗ trợ phát âm thanh tự động
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {`Phát âm thanh tự động giúp cho bạn nhận được âm thanh thông báo. Bấm 'Cho phép' để nhận thông báo có âm thanh`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Từ chối</AlertDialogCancel>
+            <AlertDialogAction onClick={handleAccessAudio}>
+              Chấp nhận
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </TVContext.Provider>
   );
 }
