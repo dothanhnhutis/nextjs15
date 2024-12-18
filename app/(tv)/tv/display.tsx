@@ -2,7 +2,7 @@
 import React from "react";
 import { useTV } from "@/components/providers/tv-provider";
 import { cn } from "@/lib/utils";
-import { PanelLeftIcon } from "lucide-react";
+import { PanelLeftIcon, VolumeOffIcon } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -19,13 +19,13 @@ const DisplayItem = (data: Display) => {
     immediatelyRender: false,
     extensions,
     content: data.content,
+    
   });
 
   const [isNew, setIsNew] = React.useState<boolean>(
     Date.now() - new Date(data.createdAt).getTime() < 60000
   );
 
-  const audio = new Audio("/mp3/bell.mp3");
 
   React.useEffect(() => {
     let id: NodeJS.Timeout;
@@ -44,7 +44,6 @@ const DisplayItem = (data: Display) => {
         "p-2 border bg-white rounded-[10px]",
         isNew ? "animation-border" : ""
       )}
-      onClick={() => audio.play()}
     >
       <EditorContent editor={editor} />
       <div className="flex justify-end gap-4 items-center">
@@ -63,7 +62,7 @@ const DisplayItem = (data: Display) => {
 };
 
 const DisplayContainer = () => {
-  const { connected, departmentsData, selectedId } = useTV();
+  const { connected, departmentsData, selectedId,isAudioAllowed,setAccessAudio } = useTV();
   const { toggleSidebar } = useSidebar();
 
   const departmentName = React.useMemo(() => {
@@ -79,6 +78,20 @@ const DisplayContainer = () => {
     handleFetch();
   }, [selectedId]);
 
+  if(!selectedId)
+    return (
+      <div className="flex flex-col relative h-screen overflow-hidden">
+        <div className="bg-white p-2">
+        <div className="flex items-center gap-2 w-full">
+           <button type="button" onClick={toggleSidebar} className="p-2">
+             <PanelLeftIcon className="size-6 shrink-0 text-muted-foreground" />
+           </button>
+         </div>
+        </div>
+        <div className="h-full flex w-full items-center justify-center"><p>Không có phòng ban nào</p></div>
+      </div>
+  )
+
   return (
     <div className="flex flex-col relative h-screen overflow-hidden">
       <div className="bg-white p-2">
@@ -90,7 +103,13 @@ const DisplayContainer = () => {
           <h4 className="text-lg font-semibold text-back line-clamp-2 w-full">
             {departmentName?.name ?? "error"}
           </h4>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
+            {
+              !isAudioAllowed && <button onClick={setAccessAudio} type="button" className="rounded-full p-2 shadow-md">
+              <VolumeOffIcon className="shrink-0 size-6 text-muted-foreground" />
+            </button>
+            }
+            
             <div
               className={cn(
                 "size-2 rounded-full shrink-0",

@@ -1,19 +1,17 @@
-"use client";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
 
 import React from "react";
-import { useAuth } from "@/components/providers/auth-provider";
 import SendVerifyEmailBtn from "./send-verify-btn";
 import ReplaceEmailForm from "./replace-email-form";
 import { Metadata } from "next";
+import EmailBox from "./email-box";
 export const metadata: Metadata = {
   title: "Xác Thực Email",
 };
 const VerifyEmailPage = () => {
-  const { currentUser } = useAuth();
 
   return (
     <div
@@ -36,10 +34,7 @@ const VerifyEmailPage = () => {
           <h1 className="text-2xl font-semibold tracking-tight text-center mt-4">
             <span>Xác minh email của bạn để tiếp tục</span>
           </h1>
-          <div className="text-center text-muted-foreground text-base">
-            Chúng tôi vừa gửi email đến địa chỉ:{" "}
-            <strong className="block md:inline">{currentUser?.email}</strong>
-          </div>
+         <EmailBox/>
           <p className="text-center text-muted-foreground text-base">
             Vui lòng kiểm tra email của bạn và chọn liên kết được cung cấp để
             xác minh địa chỉ của bạn.
