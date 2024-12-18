@@ -11,8 +11,8 @@ import {
 } from "@/services/department.service";
 import { format } from "date-fns";
 import { EditorContent, useEditor } from "@tiptap/react";
-import { extensions } from "@/components/tiptap/schema";
 import { audioPath } from "@/configs/constants";
+import { extensions } from "@/components/tiptap/components/schema";
 
 const DisplayItem = ({ data }: { data: Display }) => {
   const editor = useEditor({
@@ -34,6 +34,12 @@ const DisplayItem = ({ data }: { data: Display }) => {
     }
     return () => clearTimeout(id);
   }, [data]);
+
+  React.useEffect(() => {
+    if (editor) {
+      editor.commands.setContent(data.content, false);
+    }
+  }, [data.content, editor]);
 
   if (!data.enable) return;
 
@@ -120,8 +126,12 @@ const DisplayContainer = () => {
       setDisplays(
         sortDisplays(displays.map((d) => (d.id == data.id ? data : d)))
       );
+      if (isAudioAllowed) {
+        const audio = new Audio(audioPath);
+        audio.play();
+      }
     },
-    [displays]
+    [displays, isAudioAllowed]
   );
 
   React.useEffect(() => {

@@ -93,7 +93,7 @@ const nodeList: {
   },
 ];
 
-export const NodeList = ({ editor }: { editor: Editor }) => {
+export const BlockList = ({ editor }: { editor: Editor }) => {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState<number>(5);
 
@@ -149,4 +149,4 @@ export const NodeList = ({ editor }: { editor: Editor }) => {
   );
 };
 
-export default NodeList;
+export default BlockList;

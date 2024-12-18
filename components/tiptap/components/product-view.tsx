@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn, fileToBase64 } from "@/lib/utils";
-import { ImageIcon } from "lucide-react";
+import { BoxesIcon, ImageIcon } from "lucide-react";
 
 export type ProductNodeData = {
   id: string;
@@ -123,10 +123,11 @@ export const AddProductBtn = ({ editor }: { editor: Editor }) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="outline"
-          className={cn(isSelected ? "bg-red-200" : "")}
+          type="button"
+          size="icon"
+          variant={isSelected ? "secondary" : "ghost"}
         >
-          Sản Phẩm
+          <BoxesIcon className="size-5 shrink-0" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-screen-sm">

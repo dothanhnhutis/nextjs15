@@ -6,11 +6,11 @@ import {
   Node as TipTapNode,
 } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
-import { ProductNodeView } from "./components/product-view";
 import StarterKit from "@tiptap/starter-kit";
 import Heading from "@tiptap/extension-heading";
 import { Underline } from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
+import { ProductNodeView } from "./product-view";
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {

@@ -11,7 +11,6 @@ import {
   AlignJustifyIcon,
   AlignLeftIcon,
   AlignRightIcon,
-  EllipsisVerticalIcon,
 } from "lucide-react";
 import { ButtonType } from "./group-button-action";
 import { Button } from "@/components/ui/button";
@@ -65,6 +64,19 @@ const moreAction: ButtonActionType[] = [
 
 export const MoreAction = ({ editor }: { editor: Editor }) => {
   const [open, setOpen] = React.useState<boolean>(false);
+  const [textAlignment, setTextAlignment] = React.useState<ButtonType>("left");
+
+  editor.on("selectionUpdate", ({ editor }) => {
+    if (editor.isActive({ textAlign: "right" })) {
+      setTextAlignment("right");
+    } else if (editor.isActive({ textAlign: "center" })) {
+      setTextAlignment("center");
+    } else if (editor.isActive({ textAlign: "justify" })) {
+      setTextAlignment("justify");
+    } else {
+      setTextAlignment("left");
+    }
+  });
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -75,7 +87,7 @@ export const MoreAction = ({ editor }: { editor: Editor }) => {
           className="rounded-md"
           variant="ghost"
         >
-          <EllipsisVerticalIcon className="h-5 w-5" />
+          {moreAction.find((a) => a.value == textAlignment)!.icon}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-2 w-auto">
@@ -85,7 +97,10 @@ export const MoreAction = ({ editor }: { editor: Editor }) => {
               key={index}
               type="button"
               size="icon"
-              onClick={() => more.Run(editor)}
+              onClick={() => {
+                more.Run(editor);
+                setTextAlignment(more.value);
+              }}
               variant={more.isActive(editor) ? "secondary" : "ghost"}
               className="rounded-md"
             >
