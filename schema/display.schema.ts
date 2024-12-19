@@ -20,15 +20,17 @@ export const createDisplaySchema = z
       .min(0, "priority minimun 0")
       .max(100, "priority maximun 100")
       .default(0),
-    departmentIds: z.array(
-      z.string({
-        invalid_type_error: "departmentIds item must be string",
-      }),
-      {
-        required_error: "departmentIds is required",
-        invalid_type_error: "departmentIds must be array string",
-      }
-    ),
+    departmentIds: z
+      .array(
+        z.string({
+          invalid_type_error: "departmentIds item must be string",
+        }),
+        {
+          required_error: "departmentIds is required",
+          invalid_type_error: "departmentIds must be array string",
+        }
+      )
+      .min(1, "departmentIds not empty"),
   })
   .strict();
 

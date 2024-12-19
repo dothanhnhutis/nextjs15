@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn, fileToBase64 } from "@/lib/utils";
 import { BoxesIcon, ImageIcon } from "lucide-react";
+import SmartInputNumber from "@/components/smart-input";
 
 export type ProductNodeData = {
   id: string;
@@ -235,37 +236,6 @@ export const AddProductBtn = ({ editor }: { editor: Editor }) => {
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label
-              htmlFor="amount"
-              className="text-right text-base font-medium"
-            >
-              Số lượng
-            </Label>
-            <Input
-              type="number"
-              id="amount"
-              className={cn(
-                "focus-visible:ring-offset-0 focus-visible:ring-0",
-                data.unit == "Thùng" && data.amountOfCargoBox > 0
-                  ? "col-span-1"
-                  : "col-span-3"
-              )}
-              value={data.amount}
-              onChange={(e) => {
-                setData((prev) => ({
-                  ...prev,
-                  amount: parseInt(e.target.value, 10),
-                }));
-              }}
-            />
-            {data.unit == "Thùng" && data.amountOfCargoBox > 0 && (
-              <p className={cn("col-span-2")}>
-                x <span className="font-bold">{data.amountOfCargoBox}</span> Sản
-                phẩm
-              </p>
-            )}
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="unit" className="text-right text-base font-medium">
               Đơn Vị Tính
             </Label>
@@ -276,6 +246,7 @@ export const AddProductBtn = ({ editor }: { editor: Editor }) => {
                     setData((prev) => ({
                       ...prev,
                       unit: data.unit == "Sản Phẩm" ? "Thùng" : "Sản Phẩm",
+                      amount: 0,
                       amountOfCargoBox:
                         unit == "Sản Phẩm"
                           ? 0
@@ -293,6 +264,57 @@ export const AddProductBtn = ({ editor }: { editor: Editor }) => {
                   {unit}
                 </button>
               ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label
+              htmlFor="amount"
+              className="text-right text-base font-medium"
+            >
+              Số lượng
+            </Label>
+
+            <div className="col-span-3 flex gap-3 items-center">
+              <div
+                className={cn(
+                  "flex items-center",
+                  data.unit == "Thùng" ? "gap-2 basis-4/6" : "w-full"
+                )}
+              >
+                <SmartInputNumber
+                  value={data.amount.toString()}
+                  onInputChange={(v) => {
+                    setData((prev) => ({
+                      ...prev,
+                      amount: parseInt(v),
+                    }));
+                  }}
+                  placeholder="Thùng"
+                />
+                {data.unit == "Thùng" && (
+                  <p className="flex shrink-0 text-sm">Thùng</p>
+                )}
+              </div>
+              {data.unit == "Thùng" && (
+                <>
+                  <span className="font-bold basis-1/6 text-center text-lg">
+                    x
+                  </span>
+                  <div className="flex items-center gap-2 basis-4/6">
+                    <SmartInputNumber
+                      value={data.amountOfCargoBox.toString()}
+                      onInputChange={(v) => {
+                        setData((prev) => ({
+                          ...prev,
+                          amountOfCargoBox: parseInt(v),
+                        }));
+                      }}
+                      placeholder="Sản phẩm"
+                    />
+                    <p className="flex shrink-0 text-sm">Sản phẩm</p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

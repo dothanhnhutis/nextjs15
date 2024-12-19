@@ -1,13 +1,14 @@
 "use client";
 import React from "react";
+import Link from "next/link";
+
 import { Switch } from "@/components/ui/switch";
 import { LoaderCircleIcon, XIcon } from "lucide-react";
 import DisplayEditor from "@/components/tiptap/display-editor";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Department } from "@/services/department.service";
-import { CreateDisplay } from "@/schema/display.schema";
+import { CreateDisplay, createDisplaySchema } from "@/schema/display.schema";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,47 +23,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { createdDisplayService } from "@/services/display.service";
 import { useRouter } from "next/navigation";
-
-const SmartInputNumber = ({
-  value = "0",
-  onInputChange,
-  disabled,
-}: {
-  value?: string;
-  onInputChange?: (v: string) => void;
-  disabled?: boolean;
-}) => {
-  const [inputValue, setInputValue] = React.useState<string>(value);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-    if (/^\d+$/.test(input)) {
-      const v =
-        input.startsWith("0") && input !== "0"
-          ? parseInt(input).toString()
-          : input;
-      if (onInputChange) {
-        onInputChange(v);
-      }
-      setInputValue(v);
-    } else {
-      if (onInputChange) {
-        onInputChange("0");
-      }
-      setInputValue("0");
-    }
-  };
-
-  return (
-    <Input
-      disabled={disabled}
-      className="w-20"
-      value={inputValue}
-      type="number"
-      onChange={handleChange}
-    />
-  );
-};
+import { toast } from "sonner";
+import SmartInputNumber from "@/components/smart-input";
 
 const SelectDepartment = ({
   departments = [],
@@ -166,12 +128,16 @@ const CreateDisplayForm = ({
   const router = useRouter();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const { success, data } = createDisplaySchema.safeParse(formData);
+    if (!success) return;
     startTransition(async () => {
       try {
-        await createdDisplayService(formData);
+        await createdDisplayService(data);
         router.push("/admin/tv");
+        toast.success("Tạo hiển thị thành công");
       } catch (error: unknown) {
         console.log(error);
+        toast.error("Tạo hiển thị thất bại");
       }
     });
   };
@@ -253,6 +219,7 @@ const CreateDisplayForm = ({
             </p>
             <SmartInputNumber
               disabled={isPending}
+              className="w-20"
               value={formData.priority.toString()}
               onInputChange={(v) =>
                 setFormData((prev) => ({
@@ -278,9 +245,10 @@ const CreateDisplayForm = ({
         />
       </div>
       <div className="flex gap-2 justify-end items-center sm:col-span-2">
-        <Button type="button" variant="outline" disabled={isPending}>
-          Huỷ
+        <Button type="button" variant="outline" asChild disabled={isPending}>
+          <Link href="/admin/tv">Huỷ</Link>
         </Button>
+
         <Button disabled={isPending}>
           {isPending && (
             <LoaderCircleIcon className="h-4 w-4 animate-spin flex-shrink-0 mr-1" />

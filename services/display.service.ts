@@ -31,3 +31,14 @@ export const getDisplaysService = async (
 ) => {
   return await displayInstance.get<Display[]>("/displays", options);
 };
+
+export const getDisplayByIdService = async (
+  id: string,
+  options?: Omit<RequestInit, "body">
+) => {
+  const { data } = await displayInstance.get<Display | null>(
+    "/displays/" + id,
+    options
+  );
+  return data;
+};
