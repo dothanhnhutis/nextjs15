@@ -5,14 +5,12 @@ import { cn } from "@/lib/utils";
 import { PanelLeftIcon, VolumeOffIcon } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Display,
-  getDisplaysOfDepartment,
-} from "@/services/department.service";
+import { getDisplaysOfDepartment } from "@/services/department.service";
 import { format } from "date-fns";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { audioPath } from "@/configs/constants";
 import { extensions } from "@/components/tiptap/components/schema";
+import { Display } from "@/services/display.service";
 
 const DisplayItem = ({ data }: { data: Display }) => {
   const editor = useEditor({

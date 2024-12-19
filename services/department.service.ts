@@ -1,5 +1,6 @@
 import envs from "@/configs/envs";
 import { FetchApi } from "./fetch-api";
+import { Display } from "./display.service";
 
 const departmentInstance = new FetchApi({
   baseUrl: envs.NEXT_PUBLIC_SERVER_URL + "/api/v1/departments",
@@ -27,16 +28,6 @@ export async function getDepartments(options?: Omit<RequestInit, "body">) {
     return [];
   }
 }
-
-export type Display = {
-  id: string;
-  content: string;
-  enable: boolean;
-  priority: number;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-};
 
 export async function getDisplaysOfDepartment(displayId: string) {
   try {

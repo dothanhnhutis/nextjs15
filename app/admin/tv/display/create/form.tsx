@@ -1,49 +1,61 @@
 "use client";
 import React from "react";
-import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { XIcon } from "lucide-react";
+import { LoaderCircleIcon, XIcon } from "lucide-react";
 import DisplayEditor from "@/components/tiptap/display-editor";
-import { useAuth } from "@/components/providers/auth-provider";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Department } from "@/services/department.service";
+import { CreateDisplay } from "@/schema/display.schema";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { createdDisplayService } from "@/services/display.service";
+import { useRouter } from "next/navigation";
 
 const SmartInputNumber = ({
   value = "0",
   onInputChange,
+  disabled,
 }: {
   value?: string;
   onInputChange?: (v: string) => void;
+  disabled?: boolean;
 }) => {
   const [inputValue, setInputValue] = React.useState<string>(value);
 
-  // Đồng bộ hóa khi `value` từ bên ngoài thay đổi
-  React.useEffect(() => {
-    if (/^\d+$/.test(value)) {
-      setInputValue(parseInt(value).toString());
-    }
-  }, [value]);
-
-  // Gửi giá trị hiện tại ra ngoài khi thay đổi
-  React.useEffect(() => {
-    if (onInputChange) {
-      onInputChange(inputValue);
-    }
-  }, [inputValue, onInputChange]);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
-    if (/^\d*$/.test(input)) {
-      // Cho phép nhập số hoặc chuỗi rỗng
-      setInputValue(
+    if (/^\d+$/.test(input)) {
+      const v =
         input.startsWith("0") && input !== "0"
           ? parseInt(input).toString()
-          : input
-      );
+          : input;
+      if (onInputChange) {
+        onInputChange(v);
+      }
+      setInputValue(v);
+    } else {
+      if (onInputChange) {
+        onInputChange("0");
+      }
+      setInputValue("0");
     }
   };
 
   return (
-    <input
+    <Input
+      disabled={disabled}
       className="w-20"
       value={inputValue}
       type="number"
@@ -52,39 +64,166 @@ const SmartInputNumber = ({
   );
 };
 
-const CreateDisplayForm = () => {
-  const { currentUser } = useAuth();
-  const [formData, setFormData] = React.useState({
-    userId: currentUser!.id,
+const SelectDepartment = ({
+  departments = [],
+  selectedDefault,
+  onSave,
+  disabled,
+}: {
+  departments: Department[];
+  selectedDefault: string[];
+  onSave?: (departmentIds: string[]) => void;
+  disabled?: boolean;
+}) => {
+  const [currentData, setCurrentData] =
+    React.useState<string[]>(selectedDefault);
+
+  const handleSave = () => {
+    if (onSave) onSave(currentData);
+  };
+
+  return (
+    <AlertDialog
+      onOpenChange={(open) => {
+        if (open) setCurrentData(selectedDefault);
+      }}
+    >
+      <AlertDialogTrigger asChild>
+        <button
+          disabled={disabled}
+          type="button"
+          className="inline-flex px-2 py-1 gap-1 rounded-full border disabled:opacity-50"
+        >
+          <p className="text-sm">Thêm</p>
+        </button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Hiển thị tại đâu ?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Chọn phòng ban để hiển thị
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        <div className="space-y-2">
+          <div className="grid gap-2 overflow-y-scroll border px-2 py-1 rounded-lg max-h-[162px]">
+            {departments.map((d) => (
+              <div
+                key={d.id}
+                className="flex items-center gap-2 hover:bg-muted p-1 rounded-md cursor-pointer"
+                onClick={() => {
+                  setCurrentData((prev) =>
+                    prev.includes(d.id)
+                      ? prev.filter((id) => id != d.id)
+                      : [...prev, d.id]
+                  );
+                }}
+              >
+                <Checkbox checked={currentData.includes(d.id)} />
+                <p className="line-clamp-1">{d.name}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end items-center gap-2">
+            <button
+              type="button"
+              className="text-primary text-sm hover:underline"
+              onClick={() => setCurrentData([])}
+            >
+              Bỏ chọn tất cả
+            </button>
+            <button
+              type="button"
+              className="text-primary text-sm hover:underline"
+              onClick={() => setCurrentData(selectedDefault)}
+            >
+              Đặt lại
+            </button>
+          </div>
+        </div>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Huỷ</AlertDialogCancel>
+          <AlertDialogAction onClick={handleSave}>Lưu</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
+
+const CreateDisplayForm = ({
+  departments = [],
+}: {
+  departments?: Department[];
+}) => {
+  const [formData, setFormData] = React.useState<CreateDisplay>({
     priority: 0,
     enable: true,
     content: "<p></p>",
     departmentIds: [],
   });
 
+  const [isPending, startTransition] = React.useTransition();
+  const router = useRouter();
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    startTransition(async () => {
+      try {
+        await createdDisplayService(formData);
+        router.push("/admin/tv");
+      } catch (error: unknown) {
+        console.log(error);
+      }
+    });
+  };
+
   return (
-    <form className="grid sm:grid-cols-2 gap-4 mt-5">
-      <div className="space-y-2 sm:row-span-2 sm:col-span-1">
+    <form onSubmit={handleSubmit} className="grid sm:grid-cols-2 gap-4 mt-5">
+      <div
+        className={cn(
+          "space-y-2 sm:col-span-1",
+          formData.enable ? "sm:row-span-2" : ""
+        )}
+      >
         <label htmlFor="priority">Hiển thị tại</label>
         <div className="flex gap-2 items-center flex-wrap">
-          <div className="inline-flex px-2 py-1 gap-1 rounded-full border">
-            <p className="text-sm">Phong 1</p>
-            <button type="button">
-              <XIcon className="shrink-0 size-4" />
-            </button>
-          </div>
-          <div className="inline-flex px-2 py-1 gap-1 rounded-full border">
-            <p className="text-sm">Phong 1</p>
-            <button type="button">
-              <XIcon className="shrink-0 size-4" />
-            </button>
-          </div>
-          <button
-            type="button"
-            className="inline-flex px-2 py-1 gap-1 rounded-full border"
-          >
-            <p className="text-sm">Thêm</p>
-          </button>
+          {formData.departmentIds.map((departmentId) => {
+            const department = departments.find(
+              (department) => department.id == departmentId
+            );
+            if (!department) return;
+            return (
+              <div
+                key={department.id}
+                className="inline-flex px-2 py-1 gap-1 rounded-full border"
+              >
+                <p className="text-sm">{department.name}</p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      departmentIds: prev.departmentIds.filter(
+                        (i) => i != department.id
+                      ),
+                    }))
+                  }
+                >
+                  <XIcon className="shrink-0 size-4" />
+                </button>
+              </div>
+            );
+          })}
+          <SelectDepartment
+            disabled={isPending}
+            departments={departments}
+            selectedDefault={formData.departmentIds}
+            onSave={(data) => {
+              setFormData((prev) => ({
+                ...prev,
+                departmentIds: data,
+              }));
+            }}
+          />
         </div>
       </div>
       <div className="space-y-2">
@@ -92,44 +231,39 @@ const CreateDisplayForm = () => {
         <div className="text-xs flex items-center gap-2 text-muted-foreground">
           <p className="w-full">Bật / Tắt hiển thị</p>
           <Switch
+            disabled={isPending}
             className="block"
             checked={formData.enable}
             onCheckedChange={(v) =>
               setFormData((prev) => ({
                 ...prev,
                 enable: v,
+                priority: 0,
               }))
             }
           />
         </div>
       </div>
-      <div className="space-y-2">
-        <label htmlFor="priority">Mức độ ưu tiên</label>
-        <div className="text-xs flex items-center gap-2 text-muted-foreground">
-          <p className="w-full">Mức độ ưu tiên cao thì sẽ được đẩy lên trên</p>
-          {/* <Input
-            className="w-20"
-            value={formData.priority}
-            type="number"
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                priority:
-                  e.target.value == "" ? 0 : parseInt(e.target.value, 10),
-              }))
-            }
-          /> */}
-          <SmartInputNumber
-            value={formData.priority.toString()}
-            onInputChange={(v) =>
-              setFormData((prev) => ({
-                ...prev,
-                priority: parseInt(v),
-              }))
-            }
-          />
+      {formData.enable && (
+        <div className="space-y-2">
+          <label htmlFor="priority">Mức độ ưu tiên</label>
+          <div className="text-xs flex items-center gap-2 text-muted-foreground">
+            <p className="w-full">
+              Mức độ ưu tiên cao thì sẽ được đẩy lên trên
+            </p>
+            <SmartInputNumber
+              disabled={isPending}
+              value={formData.priority.toString()}
+              onInputChange={(v) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  priority: parseInt(v),
+                }))
+              }
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="space-y-2 sm:col-span-2">
         <label htmlFor="priority">Nội dung</label>
@@ -140,13 +274,19 @@ const CreateDisplayForm = () => {
               content: e.getHTML(),
             }))
           }
+          disabled={isPending}
         />
       </div>
       <div className="flex gap-2 justify-end items-center sm:col-span-2">
-        <Button type="button" variant="outline">
+        <Button type="button" variant="outline" disabled={isPending}>
           Huỷ
         </Button>
-        <Button>Tạo</Button>
+        <Button disabled={isPending}>
+          {isPending && (
+            <LoaderCircleIcon className="h-4 w-4 animate-spin flex-shrink-0 mr-1" />
+          )}
+          Tạo
+        </Button>
       </div>
     </form>
   );

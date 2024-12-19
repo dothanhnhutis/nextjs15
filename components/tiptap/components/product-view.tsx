@@ -97,8 +97,7 @@ export const AddProductBtn = ({ editor }: { editor: Editor }) => {
     }
   }, [isSelected, open]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleAddProduct = () => {
     editor.commands.addProduct(data);
     setOpen(false);
   };
@@ -131,195 +130,186 @@ export const AddProductBtn = ({ editor }: { editor: Editor }) => {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-screen-sm">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>
-              {isSelected ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm"}
-            </DialogTitle>
-            <DialogDescription>{isSelected ? "" : ""}</DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="url" className="text-right text-base font-medium">
-                Hình
-              </Label>
-              <div className="col-span-3 flex gap-2">
-                {data.src == "" ? (
-                  <div className="flex flex-col justify-center items-center text-center text-muted-foreground shrink-0 size-[150px] border-2 border-dashed rounded-md">
-                    <ImageIcon className="shrink-0 size-10 mx-auto" />
-                    <p className="text-xs mx-4">
-                      Chọn hình hoặc tải hình ảnh không quá 5MB
-                    </p>
-                  </div>
-                ) : (
-                  <div className="relative aspect-square size-[150px] rounded-md overflow-hidden shrink-0">
-                    <Image
-                      src={data.src}
-                      fill
-                      alt="Product"
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  </div>
-                )}
+        <DialogHeader>
+          <DialogTitle>
+            {isSelected ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm"}
+          </DialogTitle>
+          <DialogDescription>{isSelected ? "" : ""}</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="url" className="text-right text-base font-medium">
+              Hình
+            </Label>
+            <div className="col-span-3 flex gap-2">
+              {data.src == "" ? (
+                <div className="flex flex-col justify-center items-center text-center text-muted-foreground shrink-0 size-[150px] border-2 border-dashed rounded-md">
+                  <ImageIcon className="shrink-0 size-10 mx-auto" />
+                  <p className="text-xs mx-4">
+                    Chọn hình hoặc tải hình ảnh không quá 5MB
+                  </p>
+                </div>
+              ) : (
+                <div className="relative aspect-square size-[150px] rounded-md overflow-hidden shrink-0">
+                  <Image
+                    src={data.src}
+                    fill
+                    alt="Product"
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
+              )}
 
-                <div className="col-span-2 space-y-1 flex flex-col w-full h-[150px]">
-                  <Label htmlFor="url" className="text-base font-medium">
-                    Danh sách sản phẩm:
-                  </Label>
-                  <ul className="h-full max-w-[272px] overflow-y-scroll pr-1 space-y-0.5">
-                    {listProductData.map((product) => (
-                      <li
-                        key={product.id}
-                        className={cn(
-                          "p-1 rounded-md truncate",
-                          product.id == data.id
-                            ? "bg-accent"
-                            : "hover:bg-accent"
-                        )}
-                        onClick={() => {
-                          setData((prev) => ({
-                            ...prev,
-                            id: product.id,
-                            src: product.src,
-                            name: product.name,
-                            unit:
-                              product.amountOfCargoBox == 0
-                                ? "Sản Phẩm"
-                                : "Thùng",
-                            amountOfCargoBox: product.amountOfCargoBox,
-                          }));
-                        }}
-                      >
-                        <span>{product.name}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="flex items-center gap-1">
-                    <label
-                      htmlFor="upload"
-                      className="basis-1/2 text-center h-6 rounded-md hover:bg-accent border cursor-pointer"
+              <div className="col-span-2 space-y-1 flex flex-col w-full h-[150px]">
+                <Label htmlFor="url" className="text-base font-medium">
+                  Danh sách sản phẩm:
+                </Label>
+                <ul className="h-full max-w-[272px] overflow-y-scroll pr-1 space-y-0.5">
+                  {listProductData.map((product) => (
+                    <li
+                      key={product.id}
+                      className={cn(
+                        "p-1 rounded-md truncate",
+                        product.id == data.id ? "bg-accent" : "hover:bg-accent"
+                      )}
+                      onClick={() => {
+                        setData((prev) => ({
+                          ...prev,
+                          id: product.id,
+                          src: product.src,
+                          name: product.name,
+                          unit:
+                            product.amountOfCargoBox == 0
+                              ? "Sản Phẩm"
+                              : "Thùng",
+                          amountOfCargoBox: product.amountOfCargoBox,
+                        }));
+                      }}
                     >
-                      <p>Tải hình lên</p>
-                      <input
-                        id="upload"
-                        onChange={handleUpload}
-                        type="file"
-                        className="hidden"
-                        accept="image/png, image/gif, image/jpeg"
-                      />
-                    </label>
-                    <button
-                      disabled={data.src == ""}
-                      type="button"
-                      className="basis-1/2 h-6 rounded-md hover:bg-accent border disabled:opacity-50"
-                      onClick={() => setData((prev) => ({ ...prev, src: "" }))}
-                    >
-                      Xoá hình
-                    </button>
-                  </div>
+                      <span>{product.name}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex items-center gap-1">
+                  <label
+                    htmlFor="upload"
+                    className="basis-1/2 text-center h-6 rounded-md hover:bg-accent border cursor-pointer"
+                  >
+                    <p>Tải hình lên</p>
+                    <input
+                      id="upload"
+                      onChange={handleUpload}
+                      type="file"
+                      className="hidden"
+                      accept="image/png, image/gif, image/jpeg"
+                    />
+                  </label>
+                  <button
+                    disabled={data.src == ""}
+                    type="button"
+                    className="basis-1/2 h-6 rounded-md hover:bg-accent border disabled:opacity-50"
+                    onClick={() => setData((prev) => ({ ...prev, src: "" }))}
+                  >
+                    Xoá hình
+                  </button>
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label
-                htmlFor="name"
-                className="text-right text-base font-medium"
-              >
-                Tên sản phẩm
-              </Label>
-              <Input
-                id="name"
-                value={data.name}
-                onChange={(e) => {
-                  setData((prev) => ({
-                    ...prev,
-                    name: e.target.value,
-                  }));
-                }}
-                className="col-span-3 focus-visible:ring-offset-0 focus-visible:ring-0"
-                placeholder="Tên sản phẩm"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label
-                htmlFor="amount"
-                className="text-right text-base font-medium"
-              >
-                Số lượng
-              </Label>
-              <Input
-                type="number"
-                id="amount"
-                className={cn(
-                  "focus-visible:ring-offset-0 focus-visible:ring-0",
-                  data.unit == "Thùng" && data.amountOfCargoBox > 0
-                    ? "col-span-1"
-                    : "col-span-3"
-                )}
-                value={data.amount}
-                onChange={(e) => {
-                  setData((prev) => ({
-                    ...prev,
-                    amount: parseInt(e.target.value, 10),
-                  }));
-                }}
-              />
-              {data.unit == "Thùng" && data.amountOfCargoBox > 0 && (
-                <p className={cn("col-span-2")}>
-                  x <span className="font-bold">{data.amountOfCargoBox}</span>{" "}
-                  Sản phẩm
-                </p>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right text-base font-medium">
+              Tên sản phẩm
+            </Label>
+            <Input
+              id="name"
+              value={data.name}
+              onChange={(e) => {
+                setData((prev) => ({
+                  ...prev,
+                  name: e.target.value,
+                }));
+              }}
+              className="col-span-3 focus-visible:ring-offset-0 focus-visible:ring-0"
+              placeholder="Tên sản phẩm"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label
+              htmlFor="amount"
+              className="text-right text-base font-medium"
+            >
+              Số lượng
+            </Label>
+            <Input
+              type="number"
+              id="amount"
+              className={cn(
+                "focus-visible:ring-offset-0 focus-visible:ring-0",
+                data.unit == "Thùng" && data.amountOfCargoBox > 0
+                  ? "col-span-1"
+                  : "col-span-3"
               )}
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label
-                htmlFor="unit"
-                className="text-right text-base font-medium"
-              >
-                Đơn Vị Tính
-              </Label>
-              <div className="flex items-center col-span-3 border rounded-md p-1 gap-1">
-                {units.map((unit) => (
-                  <button
-                    onClick={() =>
-                      setData((prev) => ({
-                        ...prev,
-                        unit: data.unit == "Sản Phẩm" ? "Thùng" : "Sản Phẩm",
-                        amountOfCargoBox:
-                          unit == "Sản Phẩm"
-                            ? 0
-                            : listProductData.find((list) => list.id == prev.id)
-                                ?.amountOfCargoBox || 0,
-                      }))
-                    }
-                    key={unit}
-                    type="button"
-                    className={cn(
-                      "basis-1/2 rounded-md",
-                      unit == data.unit ? "bg-accent" : "bg-transparent"
-                    )}
-                  >
-                    {unit}
-                  </button>
-                ))}
-              </div>
+              value={data.amount}
+              onChange={(e) => {
+                setData((prev) => ({
+                  ...prev,
+                  amount: parseInt(e.target.value, 10),
+                }));
+              }}
+            />
+            {data.unit == "Thùng" && data.amountOfCargoBox > 0 && (
+              <p className={cn("col-span-2")}>
+                x <span className="font-bold">{data.amountOfCargoBox}</span> Sản
+                phẩm
+              </p>
+            )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="unit" className="text-right text-base font-medium">
+              Đơn Vị Tính
+            </Label>
+            <div className="flex items-center col-span-3 border rounded-md p-1 gap-1">
+              {units.map((unit) => (
+                <button
+                  onClick={() =>
+                    setData((prev) => ({
+                      ...prev,
+                      unit: data.unit == "Sản Phẩm" ? "Thùng" : "Sản Phẩm",
+                      amountOfCargoBox:
+                        unit == "Sản Phẩm"
+                          ? 0
+                          : listProductData.find((list) => list.id == prev.id)
+                              ?.amountOfCargoBox || 0,
+                    }))
+                  }
+                  key={unit}
+                  type="button"
+                  className={cn(
+                    "basis-1/2 rounded-md",
+                    unit == data.unit ? "bg-accent" : "bg-transparent"
+                  )}
+                >
+                  {unit}
+                </button>
+              ))}
             </div>
           </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="secondary">
-                Huỷ
-              </Button>
-            </DialogClose>
-            <Button
-              type="submit"
-              disabled={data.name == "" || data.amount == 0}
-            >
-              {isSelected ? "Lưu" : "Thêm "}
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Huỷ
             </Button>
-          </DialogFooter>
-        </form>
+          </DialogClose>
+          <Button
+            type="submit"
+            onClick={handleAddProduct}
+            disabled={data.name == "" || data.amount == 0}
+          >
+            {isSelected ? "Lưu" : "Thêm "}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
