@@ -1,6 +1,6 @@
 import envs from "@/configs/envs";
 import { FetchApi } from "./fetch-api";
-import { CreateDisplay } from "@/schema/display.schema";
+import { CreateDisplay, UpdateDisplay } from "@/schema/display.schema";
 import { Department } from "./department.service";
 
 const displayInstance = new FetchApi({
@@ -30,10 +30,14 @@ export const createdDisplayService = async (
 
 export const updateDisplayService = async (
   displayId: string,
-  data: CreateDisplay,
+  data: UpdateDisplay,
   options?: Omit<RequestInit, "body">
 ) => {
-  await displayInstance.put("/displays/" + displayId, data, options);
+  return await displayInstance.put<{ message: string }>(
+    "/displays/" + displayId,
+    data,
+    options
+  );
 };
 
 export const getDisplaysService = async (

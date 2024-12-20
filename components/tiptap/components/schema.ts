@@ -34,20 +34,107 @@ const ProductNode = TipTapNode.create({
   group: "block",
   atom: true,
   addAttributes: () => ({
-    id: { default: "" },
-    name: { default: "" },
-    src: { default: "" },
-    amount: { default: "0" },
-    unit: { default: "Sản Phẩm" },
-    amountOfCargoBox: { default: "0" },
+    id: {
+      default: "",
+      parseHTML(e) {
+        return e.getAttribute("id");
+      },
+    },
+    name: {
+      default: "",
+      parseHTML(e) {
+        return e.getAttribute("name");
+      },
+    },
+    src: {
+      default: "",
+      parseHTML(e) {
+        return e.getAttribute("src");
+      },
+    },
+    amount: {
+      default: "0",
+      parseHTML(e) {
+        return e.getAttribute("amount");
+      },
+    },
+    unit: {
+      default: "Sản Phẩm",
+      parseHTML(e) {
+        return e.getAttribute("unit");
+      },
+    },
+    amountOfCargoBox: {
+      default: "0",
+      parseHTML(e) {
+        return e.getAttribute("amountOfCargoBox");
+      },
+    },
   }),
-  renderHTML({ HTMLAttributes }) {
-    return ["product-node", mergeAttributes(HTMLAttributes)];
+  renderHTML({ node, HTMLAttributes }) {
+    return [
+      "div",
+      mergeAttributes(HTMLAttributes, {
+        class: "flex gap-2 py-2",
+        "data-type": "product",
+      }),
+      [
+        "div",
+        {
+          class:
+            "hidden sm:block relative aspect-square size-[100px] rounded-md overflow-hidden shrink-0",
+        },
+        ["img", { src: node.attrs.src, alt: node.attrs.name }],
+      ],
+      [
+        "div",
+        { class: "w-full p-1" },
+        [
+          "h2",
+          { class: "text-4xl font-bold line-clamp-2 md:line-clamp-1" },
+          node.attrs.name,
+        ],
+        node.attrs.unit == "Sản Phẩm"
+          ? [
+              "div",
+              { class: "flex items-center gap-1" },
+              [
+                "p",
+                { class: "p-1 text-md" },
+                ["span", {}, "SL:"],
+                [
+                  "span",
+                  { class: "font-bold text-2xl" },
+                  `${node.attrs.amount} ${node.attrs.unit}`,
+                ],
+              ],
+            ]
+          : [
+              "div",
+              { class: "flex items-center gap-1" },
+              [
+                "p",
+                { class: "p-1 text-md" },
+                ["span", {}, "SL: "],
+                [
+                  "span",
+                  { class: "font-bold text-2xl" },
+                  `${node.attrs.amount} ${node.attrs.unit}`,
+                ],
+                [
+                  "span",
+                  { class: "text-sm" },
+                  ` x ${node.attrs.amountOfCargoBox} SP`,
+                ],
+              ],
+            ],
+      ],
+    ];
   },
   parseHTML() {
     return [
       {
-        tag: "product-node",
+        tag: "div[data-type=product]",
       },
     ];
   },
@@ -58,17 +145,26 @@ const ProductNode = TipTapNode.create({
     return {
       addProduct(data: ProductNodeData) {
         return ({ commands }) => {
-          return commands.insertContent({
-            type: "product",
-            attrs: {
-              name: data.name,
-              src: data.src,
-              amount: data.amount.toString(),
-              unit: data.unit,
-              id: data.id,
-              amountOfCargoBox: data.amountOfCargoBox.toString(),
-            },
-          });
+          return commands.insertContent(
+            [
+              {
+                type: "product",
+                attrs: {
+                  name: data.name,
+                  src: data.src,
+                  amount: data.amount.toString(),
+                  unit: data.unit,
+                  id: data.id,
+                  amountOfCargoBox: data.amountOfCargoBox.toString(),
+                },
+              },
+            ],
+            {
+              parseOptions: {
+                preserveWhitespace: false,
+              },
+            }
+          );
         };
       },
     };

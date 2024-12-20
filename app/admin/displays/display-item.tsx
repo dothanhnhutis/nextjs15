@@ -15,15 +15,12 @@ import {
 import Link from "next/link";
 // import { toast } from "sonner";
 // import { updateDisplayAction } from "./actions";
-import { useDisplay } from "./display-provider";
 
 const DisplayItem = ({ data }: { data: Display }) => {
   // const [isPending, startTransition] = React.useTransition();
-  const { updateDisplay } = useDisplay();
 
   const handleSave = () => {
     // startTransition(async () => {
-    updateDisplay(data.id, { enable: !data.enable });
     // try {
     //   await updateDisplayAction(data.id, {
     //     enable: !data.enable,

@@ -7,19 +7,10 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getDisplaysOfDepartment } from "@/services/department.service";
 import { format } from "date-fns";
-import { EditorContent, useEditor } from "@tiptap/react";
 import { audioPath } from "@/configs/constants";
-import { extensions } from "@/components/tiptap/components/schema";
 import { Display } from "@/services/display.service";
 
 const DisplayItem = ({ data }: { data: Display }) => {
-  const editor = useEditor({
-    editable: false,
-    immediatelyRender: false,
-    extensions,
-    content: data.content,
-  });
-
   const [isNew, setIsNew] = React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -33,14 +24,6 @@ const DisplayItem = ({ data }: { data: Display }) => {
     return () => clearTimeout(id);
   }, [data]);
 
-  React.useEffect(() => {
-    if (editor) {
-      editor.commands.setContent(data.content, false);
-    }
-  }, [data.content, editor]);
-
-  if (!data.enable) return;
-
   return (
     <div
       className={cn(
@@ -48,7 +31,7 @@ const DisplayItem = ({ data }: { data: Display }) => {
         isNew ? "animation-border" : ""
       )}
     >
-      <EditorContent editor={editor} />
+      <div dangerouslySetInnerHTML={{ __html: data.content }}></div>
       <div className="flex justify-end gap-4 items-center">
         <p className="text-xs text-muted-foreground">
           {`Priority: ${data.priority}`}
@@ -121,15 +104,43 @@ const DisplayContainer = () => {
 
   const handleUpdateDisplay = React.useCallback(
     (data: Display) => {
-      setDisplays(
-        sortDisplays(displays.map((d) => (d.id == data.id ? data : d)))
-      );
-
+      const existsDisplay = displays.find((d) => d.id == data.id);
+      const audio = new Audio(audioPath);
       console.log(data);
-      // if (isAudioAllowed) {
-      //   const audio = new Audio(audioPath);
-      //   audio.play();
-      // }
+      if (existsDisplay) {
+        const notExits = data.departments.find((d) => d.id != selectedId);
+        if (!data.enable || notExits) {
+          setDisplays(sortDisplays(displays.filter((d) => d.id != data.id)));
+        } else {
+          setDisplays(
+            sortDisplays(displays.map((d) => (d.id == data.id ? data : d)))
+          );
+          if (isAudioAllowed) {
+            audio.play();
+          }
+        }
+      } else {
+        // const kk = data.departments.find(d => d.id == selectedId)
+        if (data.enable) {
+          setDisplays(sortDisplays([data, ...displays]));
+          if (isAudioAllowed) {
+            audio.play();
+          }
+        }
+      }
+    },
+    [displays, isAudioAllowed, selectedId]
+  );
+
+  const handleDeleteDisplay = React.useCallback(
+    (data: Display) => {
+      setDisplays(sortDisplays(displays.filter((d) => d.id != data.id)));
+      console.log("handleDeleteDisplay");
+      console.log(data);
+      if (isAudioAllowed) {
+        const audio = new Audio(audioPath);
+        audio.play();
+      }
     },
     [displays, isAudioAllowed]
   );
@@ -138,15 +149,17 @@ const DisplayContainer = () => {
     if (socket) {
       socket.on("createDisplay", handleCreateDisplay);
       socket.on("updateDisplay", handleUpdateDisplay);
+      socket.on("deleteDisplay", handleDeleteDisplay);
     }
 
     return () => {
       if (socket) {
         socket.off("createDisplay", handleCreateDisplay);
         socket.off("updateDisplay", handleUpdateDisplay);
+        socket.off("deleteDisplay", handleDeleteDisplay);
       }
     };
-  }, [socket, handleCreateDisplay, handleUpdateDisplay]);
+  }, [socket, handleCreateDisplay, handleUpdateDisplay, handleDeleteDisplay]);
 
   if (!selectedId)
     return (
@@ -198,9 +211,11 @@ const DisplayContainer = () => {
 
       <ScrollArea className="h-full">
         <main className="flex flex-col gap-1 p-1 h-full relative z-0">
-          {displays.map((d) => (
-            <DisplayItem key={d.id} data={d} />
-          ))}
+          {displays.length > 0 ? (
+            displays.map((d) => <DisplayItem key={d.id} data={d} />)
+          ) : (
+            <p className="text-center text-xl">Chưa có đơn hàng</p>
+          )}
         </main>
       </ScrollArea>
     </div>

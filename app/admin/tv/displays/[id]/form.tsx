@@ -8,7 +8,7 @@ import DisplayEditor from "@/components/tiptap/display-editor";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Department } from "@/services/department.service";
-import { CreateDisplay, createDisplaySchema } from "@/schema/display.schema";
+import { UpdateDisplay, updateDisplaySchema } from "@/schema/display.schema";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -119,7 +119,7 @@ const UpdateDisplayForm = ({
   departments: Department[];
   display: Display;
 }) => {
-  const [formData, setFormData] = React.useState<CreateDisplay>({
+  const [formData, setFormData] = React.useState<Required<UpdateDisplay>>({
     priority: display.priority,
     enable: display.enable,
     content: display.content,
@@ -130,7 +130,7 @@ const UpdateDisplayForm = ({
   const router = useRouter();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { success, data } = createDisplaySchema.safeParse(formData);
+    const { success, data } = updateDisplaySchema.safeParse(formData);
     if (!success) return;
     startTransition(async () => {
       try {
@@ -238,12 +238,13 @@ const UpdateDisplayForm = ({
         <label htmlFor="priority">Nội dung</label>
         <DisplayEditor
           content={formData.content}
-          onEditorChange={(e) =>
+          onEditorChange={(e) => {
+            console.log(e.getHTML());
             setFormData((prev) => ({
               ...prev,
               content: e.getHTML(),
-            }))
-          }
+            }));
+          }}
           disabled={isPending}
         />
       </div>

@@ -30,7 +30,6 @@ const EditDisplayPage = async ({
     },
   });
 
-  console.log(display);
   if (!display) return notFound();
 
   return (
