@@ -29,6 +29,8 @@ const EditDisplayPage = async ({
         .join("; "),
     },
   });
+
+  console.log(display);
   if (!display) return notFound();
 
   return (

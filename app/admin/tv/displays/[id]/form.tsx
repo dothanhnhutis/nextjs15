@@ -21,7 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { createdDisplayService, Display } from "@/services/display.service";
+import { Display, updateDisplayService } from "@/services/display.service";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import SmartInputNumber from "@/components/smart-input";
@@ -123,7 +123,7 @@ const UpdateDisplayForm = ({
     priority: display.priority,
     enable: display.enable,
     content: display.content,
-    departmentIds: [],
+    departmentIds: display.departments.map((d) => d.id),
   });
 
   const [isPending, startTransition] = React.useTransition();
@@ -134,12 +134,12 @@ const UpdateDisplayForm = ({
     if (!success) return;
     startTransition(async () => {
       try {
-        await createdDisplayService(data);
+        await updateDisplayService(display.id, data);
         router.push("/admin/tv");
-        toast.success("Tạo hiển thị thành công");
+        toast.success("Cập nhật hiển thị thành công");
       } catch (error: unknown) {
         console.log(error);
-        toast.error("Tạo hiển thị thất bại");
+        toast.error("Cập nhật hiển thị thất bại");
       }
     });
   };

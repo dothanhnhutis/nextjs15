@@ -124,10 +124,12 @@ const DisplayContainer = () => {
       setDisplays(
         sortDisplays(displays.map((d) => (d.id == data.id ? data : d)))
       );
-      if (isAudioAllowed) {
-        const audio = new Audio(audioPath);
-        audio.play();
-      }
+
+      console.log(data);
+      // if (isAudioAllowed) {
+      //   const audio = new Audio(audioPath);
+      //   audio.play();
+      // }
     },
     [displays, isAudioAllowed]
   );
