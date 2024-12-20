@@ -1,4 +1,4 @@
-import { getDisplaysService } from "@/services/display.service";
+import { filterDisplaysService } from "@/services/display.service";
 import { FilterIcon, PlusIcon } from "lucide-react";
 import { cookies } from "next/headers";
 import Link from "next/link";
@@ -13,16 +13,20 @@ type DisplayFilter = {
 };
 
 type DisplayPageProps = {
-  searchParams: Awaited<{
-    enable?: boolean;
-  }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-const DisplayPage = async ({ searchParams }: DisplayPageProps) => {
+const DisplayPage = async (props: DisplayPageProps) => {
   const cookieStore = await cookies();
-  const { enable = true } = await searchParams;
-
-  const { data: displays } = await getDisplaysService({
+  const searchParams = await props.searchParams;
+  // console.log(searchParams);
+  // const queryString = new URLSearchParams(
+  //   searchParams as Record<string, string>
+  // ).toString();
+  // console.log(queryString);
+  const {
+    data: { displays },
+  } = await filterDisplaysService(searchParams, {
     headers: {
       cookie: cookieStore
         .getAll()
@@ -30,8 +34,6 @@ const DisplayPage = async ({ searchParams }: DisplayPageProps) => {
         .join("; "),
     },
   });
-
-  console.log(displays);
 
   return (
     <main>

@@ -40,10 +40,35 @@ export const updateDisplayService = async (
   );
 };
 
+export const filterDisplaysService = async (
+  searchParams: {
+    [key: string]: string | string[] | undefined;
+  },
+  options?: Omit<RequestInit, "body">
+) => {
+  const data = [];
+  for (const key in searchParams) {
+    if (typeof searchParams[key] == "string") {
+      data.push(`${key}=${searchParams[key]}`);
+    } else if (Array.isArray(searchParams[key])) {
+      for (const value of searchParams[key]) {
+        data.push(`${key}=${value}`);
+      }
+    }
+  }
+  return await displayInstance.get<{ displays: Display[] }>(
+    data.length > 0 ? "/displays?" + data.join("&") : "/displays",
+    options
+  );
+};
+
 export const getDisplaysService = async (
   options?: Omit<RequestInit, "body">
 ) => {
-  return await displayInstance.get<Display[]>("/displays", options);
+  return await displayInstance.get<{ displays: Display[] }>(
+    "/displays",
+    options
+  );
 };
 
 export const getDisplayByIdService = async (
