@@ -1,6 +1,5 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { Display } from "@/services/display.service";
 import { format } from "date-fns";
 import { EllipsisIcon } from "lucide-react";
 import React from "react";
@@ -13,42 +12,62 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-// import { toast } from "sonner";
-// import { updateDisplayAction } from "./actions";
+import { Display } from "@/schema/display.schema";
+import { updateDisplayAction } from "./actions";
+import { toast } from "sonner";
 
-const DisplayItem = ({ data }: { data: Display }) => {
-  // const [isPending, startTransition] = React.useTransition();
+const DisplayItem = ({
+  data,
+  action,
+}: {
+  data: Display;
+  action: typeof updateDisplayAction;
+}) => {
+  const bindAction = action.bind(null, data.id, { enable: !data.enable });
 
-  const handleSave = () => {
-    // startTransition(async () => {
-    // try {
-    //   await updateDisplayAction(data.id, {
-    //     enable: !data.enable,
-    //   });
-    //   toast.success("Ẩn hiển thị thành công");
-    // } catch (error: unknown) {
-    //   console.log(error);
-    //   toast.error("Ẩn hiển thị thất bại");
-    // }
-    // });
-  };
+  const [state, formAction, isPending] = React.useActionState<{
+    success: boolean | null;
+    message: string;
+  }>(bindAction, {
+    success: null,
+    message: "",
+  });
+
+  React.useEffect(() => {
+    if (state.success != null) {
+      if (state.success) {
+        toast.success(state.message);
+      } else {
+        toast.error(state.message);
+      }
+    }
+  }, [state]);
 
   return (
-    <div className={cn("p-2 border bg-white rounded-[10px] relative")}>
+    <div
+      className={cn(
+        "p-2 border bg-white rounded-[10px] relative",
+        isPending ? "animate-pulse" : ""
+      )}
+    >
       <div dangerouslySetInnerHTML={{ __html: data.content }}></div>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="absolute top-2 right-2 border rounded-full p-2">
+        <DropdownMenuTrigger asChild disabled={isPending}>
+          <button className="absolute top-1 right-1 p-2">
             <EllipsisIcon className="size-4" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-20">
           <DropdownMenuGroup>
-            <DropdownMenuItem asChild>
-              <Link href={"/admin/tv/displays/" + data.id}>Chỉnh sửa</Link>
+            <DropdownMenuItem asChild className="cursor-pointer">
+              <Link href={"/admin/displays/" + data.id}>Chỉnh sửa</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleSave}>
-              {data.enable ? "Ẩn" : "Hiện"}
+            <DropdownMenuItem asChild>
+              <form action={formAction} className="!p-0">
+                <button className="w-full text-start p-1.5">
+                  {data.enable ? "Ẩn" : "Hiện"}
+                </button>
+              </form>
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>

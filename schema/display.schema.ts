@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { Department } from "./department.schema";
 
 export const createDisplaySchema = z
   .object({
@@ -65,7 +66,23 @@ export const updateDisplaySchema = z
       )
       .min(1, "departmentIds not empty"),
   })
-  .strip()
-  .partial();
+  .strip();
 export type CreateDisplay = z.infer<typeof createDisplaySchema>;
 export type UpdateDisplay = z.infer<typeof updateDisplaySchema>;
+
+export type Display = {
+  id: string;
+  content: string;
+  enable: boolean;
+  priority: number;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  departments: Department[];
+  createdBy: {
+    id: string;
+    picture: string;
+    username: string;
+    email: string;
+  };
+};

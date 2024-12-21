@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { getDisplaysOfDepartment } from "@/services/department.service";
 import { format } from "date-fns";
 import { audioPath } from "@/configs/constants";
-import { Display } from "@/services/display.service";
+import { Display } from "@/schema/display.schema";
 
 const DisplayItem = ({ data }: { data: Display }) => {
   const [isNew, setIsNew] = React.useState<boolean>(false);

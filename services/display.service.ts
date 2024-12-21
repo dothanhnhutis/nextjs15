@@ -1,7 +1,6 @@
 import envs from "@/configs/envs";
 import { FetchApi } from "./fetch-api";
-import { CreateDisplay, UpdateDisplay } from "@/schema/display.schema";
-import { Department } from "./department.service";
+import { CreateDisplay, Display, UpdateDisplay } from "@/schema/display.schema";
 
 const displayInstance = new FetchApi({
   baseUrl: envs.NEXT_PUBLIC_SERVER_URL + "/api/v1",
@@ -11,16 +10,7 @@ const displayInstance = new FetchApi({
     Accept: "application/json",
   },
 });
-export type Display = {
-  id: string;
-  content: string;
-  enable: boolean;
-  priority: number;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-  departments: Department[];
-};
+
 export const createdDisplayService = async (
   data: CreateDisplay,
   options?: Omit<RequestInit, "body">
@@ -30,7 +20,7 @@ export const createdDisplayService = async (
 
 export const updateDisplayService = async (
   displayId: string,
-  data: UpdateDisplay,
+  data: Partial<UpdateDisplay>,
   options?: Omit<RequestInit, "body">
 ) => {
   return await displayInstance.put<{ message: string }>(

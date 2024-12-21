@@ -1,6 +1,7 @@
 import envs from "@/configs/envs";
 import { FetchApi } from "./fetch-api";
-import { Display } from "./display.service";
+import { Department } from "@/schema/department.schema";
+import { Display } from "@/schema/display.schema";
 
 const departmentInstance = new FetchApi({
   baseUrl: envs.NEXT_PUBLIC_SERVER_URL + "/api/v1/departments",
@@ -10,14 +11,6 @@ const departmentInstance = new FetchApi({
     Accept: "application/json",
   },
 });
-
-export type Department = {
-  id: string;
-  name: string;
-  factoryId: string;
-  createdAt: string;
-  updatedAt: string;
-};
 
 export async function getDepartments(options?: Omit<RequestInit, "body">) {
   try {
