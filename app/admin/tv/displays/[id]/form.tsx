@@ -24,7 +24,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Display, updateDisplayService } from "@/services/display.service";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import SmartInputNumber from "@/components/smart-input";
+import SmartInputIntNumber from "@/components/smart-input";
 
 const SelectDepartment = ({
   departments = [],
@@ -219,7 +219,7 @@ const UpdateDisplayForm = ({
             <p className="w-full">
               Mức độ ưu tiên cao thì sẽ được đẩy lên trên
             </p>
-            <SmartInputNumber
+            <SmartInputIntNumber
               disabled={isPending}
               className="w-20"
               value={formData.priority.toString()}

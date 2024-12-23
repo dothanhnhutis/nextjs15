@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LoaderCircleIcon, XIcon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import SmartInputNumber from "@/components/smart-input";
+import SmartInputIntNumber from "@/components/smart-input";
 import DisplayEditor from "@/components/tiptap/display-editor";
 import { Button } from "@/components/ui/button";
 import {
@@ -245,11 +245,11 @@ const DisplayForm = ({ departments = [], ...props }: DisplayFormProps) => {
           <label htmlFor="priority">Mức độ ưu tiên</label>
           <div className="text-xs flex items-center gap-2 text-muted-foreground">
             <p className="w-full">
-              Mức độ ưu tiên cao thì sẽ được đẩy lên trên
+              Mức độ ưu tiên cao thì sẽ được đẩy lên trên [0-99]
             </p>
-            <SmartInputNumber
+            <SmartInputIntNumber
               disabled={isPending}
-              className="w-20"
+              className="w-16"
               value={formData.priority.toString()}
               onInputChange={(v) =>
                 setFormData((prev) => ({

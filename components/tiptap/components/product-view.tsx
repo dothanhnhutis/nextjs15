@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn, fileToBase64 } from "@/lib/utils";
 import { BoxesIcon, ImageIcon } from "lucide-react";
-import SmartInputNumber from "@/components/smart-input";
+import SmartInputIntNumber from "@/components/smart-input";
 
 export type ProductNodeData = {
   id: string;
@@ -281,7 +281,7 @@ export const AddProductBtn = ({ editor }: { editor: Editor }) => {
                   data.unit == "Thùng" ? "gap-2 basis-4/6" : "w-full"
                 )}
               >
-                <SmartInputNumber
+                <SmartInputIntNumber
                   value={data.amount.toString()}
                   onInputChange={(v) => {
                     setData((prev) => ({
@@ -301,7 +301,7 @@ export const AddProductBtn = ({ editor }: { editor: Editor }) => {
                     x
                   </span>
                   <div className="flex items-center gap-2 basis-4/6">
-                    <SmartInputNumber
+                    <SmartInputIntNumber
                       value={data.amountOfCargoBox.toString()}
                       onInputChange={(v) => {
                         setData((prev) => ({
