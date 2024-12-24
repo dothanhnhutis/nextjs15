@@ -106,10 +106,11 @@ const DisplayContainer = () => {
     (data: Display) => {
       const existsDisplay = displays.find((d) => d.id == data.id);
       const audio = new Audio(audioPath);
-      console.log(data);
       if (existsDisplay) {
-        const notExits = data.departments.find((d) => d.id != selectedId);
-        if (!data.enable || notExits) {
+        const inDepartment = data.departments.find((d) => d.id == selectedId);
+        console.log("handleUpdateDisplay ", inDepartment);
+
+        if (!data.enable || !inDepartment) {
           setDisplays(sortDisplays(displays.filter((d) => d.id != data.id)));
         } else {
           setDisplays(

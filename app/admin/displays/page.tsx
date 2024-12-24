@@ -23,7 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import SmartInputIntNumber from "@/components/smart-input-int";
 
 type DisplayPageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -59,13 +58,12 @@ const DisplayPage = async (props: DisplayPageProps) => {
           <PlusIcon className="shrink-0 size-5" />
         </Link>
       </div>
-      <SmartInputIntNumber className="border" min={-100} />
       <div className="grid gap-2 mt-2 pb-4 px-2 mx-auto max-w-screen-lg">
         {displays.map((d) => (
           <DisplayItem key={d.id} data={d} action={updateDisplayAction} />
         ))}
       </div>
-      <div className="flex items-center justify-between px-2">
+      <div className="flex items-center justify-between px-2 mx-auto max-w-screen-lg">
         <div className="flex-1 text-sm text-muted-foreground">
           {10} of {10} row(s) selected.
         </div>
