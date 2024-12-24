@@ -13,6 +13,8 @@ import { FilterIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import * as z from "zod";
 import { usePathname, useRouter } from "next/navigation";
+import { format } from "date-fns";
+import { DateInputV1 } from "@/components/date-input";
 
 const prioritySchema = z
   .string()
@@ -24,6 +26,10 @@ const prioritySchema = z
   });
 
 const DisplayFilter = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  // const searchParams = useSearchParams();
+  const [open, setOpen] = React.useState<boolean>(false);
   const [createdAt, setCreatedAt] = React.useState({
     include: true,
     value: ["", ""],
@@ -41,7 +47,6 @@ const DisplayFilter = () => {
   });
 
   const [error, setError] = React.useState({
-    dateError: "",
     dateStartError: "",
     dateEndError: "",
     priorityError: "",
@@ -118,7 +123,7 @@ const DisplayFilter = () => {
     }
   }, [error.priorityFromError, error.priorityToError, priority]);
 
-  const searchParams = React.useMemo(() => {
+  const filter = React.useMemo(() => {
     const searchParams = new URLSearchParams();
     if (enable.include) {
       searchParams.append("enable", enable.value);
@@ -140,27 +145,95 @@ const DisplayFilter = () => {
           searchParams.append("maxPriority", priority.value[1]);
       }
     }
+    if (createdAt.include) {
+      searchParams.append("createdAtFrom", createdAt.value[0]);
+      searchParams.append("createdAtTo", createdAt.value[1]);
+    }
     return searchParams.toString();
-  }, [enable, priority, error]);
+  }, [
+    enable.include,
+    enable.value,
+    priority.include,
+    priority.valuetype,
+    priority.value,
+    createdAt.include,
+    createdAt.value,
+    error.priorityError.length,
+    error.priorityFromError.length,
+    error.priorityToError.length,
+  ]);
 
-  console.log(error);
-  console.log(searchParams);
-  const router = useRouter();
-  const pathname = usePathname();
-  // const searchParams = useSearchParams()
+  // console.log(filter);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    router.push(pathname + "?" + searchParams);
+    router.push(pathname + "?" + filter);
+    setOpen(false);
   };
 
+  const handleReset = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const enable = searchParams.get("enable");
+    const priority = searchParams.get("priority");
+    const minPriority = searchParams.get("minPriority");
+    const maxPriority = searchParams.get("maxPriority");
+    const createdAtFrom = searchParams.get("createdAtFrom");
+    const createdAtTo = searchParams.get("createdAtTo");
+
+    if (enable) {
+      setEnable((prev) => ({ ...prev, value: enable, include: true }));
+    } else {
+      setEnable((prev) => ({ ...prev, include: false }));
+    }
+    if (priority) {
+      setPriority(() => ({
+        include: true,
+        value: [priority, priority],
+        valuetype: "string",
+      }));
+    } else if (minPriority && maxPriority) {
+      setPriority(() => ({
+        include: true,
+        value: [minPriority, maxPriority],
+        valuetype: "range",
+      }));
+    } else {
+      setPriority(() => ({
+        include: false,
+        value: ["0", "99"],
+        valuetype: "range",
+      }));
+    }
+    if (createdAtFrom && createdAtTo) {
+      setCreatedAt(() => ({
+        include: true,
+        value: [createdAtFrom, createdAtTo],
+      }));
+    } else {
+      const currentDate = new Date();
+      setCreatedAt(() => ({
+        include: false,
+        value: [
+          format(currentDate, "dd/MM/yyyy"),
+          format(currentDate, "dd/MM/yyyy"),
+        ],
+      }));
+    }
+  };
+
+  React.useEffect(() => {
+    // handleReset();
+  }, [open]);
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button type="button" className="border rounded-md p-1 hover:bg-accent">
           <FilterIcon className="shrink-0 size-5" />
         </button>
       </PopoverTrigger>
       <PopoverContent side="bottom" align="end" className="w-80 p-0">
+        <DateInputV1 />
         <form onSubmit={handleSubmit}>
           <h4 className="font-medium leading-none p-2">Bộ lọc</h4>
           <Separator className="my-2" />
@@ -187,12 +260,50 @@ const DisplayFilter = () => {
                 Đến ngày:
               </p>
               <Input
-                // placeholder="dd/MM/yyyy"
-                type="date"
-                // value={createdAt.value[0].toString()}
+                disabled={!createdAt.include}
+                placeholder="dd/MM/yyyy"
+                value={createdAt.value[0]}
+                onChange={(e) => {
+                  let value = e.target.value;
+                  if (!/^[0-9\/]{0,10}$/.test(value)) return;
+
+                  if (value.length == 6) {
+                    if (value[5] !== "/") {
+                      value = value.slice(0, 5) + "/" + value.slice(5);
+                    }
+                  }
+
+                  if (value.length == 3) {
+                    if (value[2] !== "/") {
+                      value = value.slice(0, 2) + "/" + value.slice(2);
+                    }
+                  }
+
+                  const dayMonthRegex =
+                    /^(0[1-9]|[1-2][0-9]|[3][0-1])\/([0-1]?|0[1-9]|1[0-2])$/;
+                  if (
+                    value.length >= 3 &&
+                    value.length <= 5 &&
+                    !dayMonthRegex.test(value)
+                  )
+                    return;
+
+                  const dayRegex =
+                    /^([0-3]{0,1}|0[1-9]|[1-2][0-9]|[3][0-1])\/?$/;
+                  if (value.length <= 2 && !dayRegex.test(value)) return;
+
+                  setCreatedAt((prev) => ({
+                    ...prev,
+                    value: [value, prev.value[1]],
+                  }));
+                }}
+              />
+              <Input
+                disabled={!createdAt.include}
+                placeholder="dd/MM/yyyy"
+                value={createdAt.value[1]}
                 onChange={(e) => console.log(e.target.value)}
               />
-              <Input placeholder="dd/MM/yyyy" />
             </div>
           </div>
           <Separator className="my-2" />
@@ -321,6 +432,7 @@ const DisplayFilter = () => {
                       Từ:
                     </p>
                     <Input
+                      disabled={!priority.include}
                       className={cn(
                         "focus-visible:outline-0 focus-visible:ring-offset-0 focus-visible:ring-0",
                         priority.include &&
@@ -351,6 +463,7 @@ const DisplayFilter = () => {
                       Đến:
                     </p>
                     <Input
+                      disabled={!priority.include}
                       className={cn(
                         "focus-visible:outline-0 focus-visible:ring-offset-0 focus-visible:ring-0",
                         priority.include &&
@@ -388,7 +501,7 @@ const DisplayFilter = () => {
           </div>
           <Separator className="my-2" />
           <div className="flex justify-between gap-2 items-center px-2 pb-4">
-            <Button type="button" variant="outline">
+            <Button type="button" variant="outline" onClick={handleReset}>
               Đặt lại
             </Button>
             <Button>Áp dụng</Button>
