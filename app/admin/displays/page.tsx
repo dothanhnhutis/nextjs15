@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { caculatorPagination, cn } from "@/lib/utils";
+import DisplaySort from "./display-sort";
 
 type DisplayPageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -51,6 +52,7 @@ const DisplayPage = async (props: DisplayPageProps) => {
     <main>
       <div className="flex items-center gap-2 sticky right-0 top-[64px] z-10 bg-white px-2">
         <h3 className="text-3xl font-bold w-full">Hiển Thị</h3>
+        <DisplaySort />
         <DisplayFilter />
         <Link
           href={"/admin/displays/create"}

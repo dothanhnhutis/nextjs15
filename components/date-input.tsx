@@ -1,69 +1,22 @@
 "use client";
+import { cn } from "@/lib/utils";
 import React from "react";
 type DateInputProps = {
   date?: string;
   onDateChange?: (date: string) => void;
   disabled?: boolean;
-};
-export const DateInput = ({ date, onDateChange }: DateInputProps) => {
-  const dateRegex = /^(0[1-9]|[1-2][0-9]|[3][0-1])\/(0[1-9]|1[0-2])\/(\d{4})$/;
-
-  const [data, setDate] = React.useState<string>(
-    date && dateRegex.test(date) ? date : ""
-  );
-
-  const handleOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
-    if (!/^[0-9\/]{0,10}$/.test(value)) return;
-
-    // const fullDateRegex = /^(0[1-9]|[1-2][0-9]|[3][0-1])\/(0[1-9]|1[0-2])\/(\d{0,4})$/;
-
-    // if (value.length <= 10 && value.length > 6) {
-    //   if (value[2] !== "/" || value[5] !== "/") return;
-    // }
-
-    if (value.length == 6) {
-      if (value[5] !== "/") {
-        value = value.slice(0, 5) + "/" + value.slice(5);
-      }
-    }
-
-    if (value.length == 3) {
-      if (value[2] !== "/") {
-        value = value.slice(0, 2) + "/" + value.slice(2);
-      }
-    }
-
-    const dayMonthRegex =
-      /^(0[1-9]|[1-2][0-9]|[3][0-1])\/([0-1]?|0[1-9]|1[0-2])$/;
-    if (value.length >= 3 && value.length <= 5 && !dayMonthRegex.test(value))
-      return;
-
-    const dayRegex = /^([0-3]{0,1}|0[1-9]|[1-2][0-9]|[3][0-1])\/?$/;
-    if (value.length <= 2 && !dayRegex.test(value)) return;
-
-    setDate(value);
-    if (onDateChange) onDateChange(value);
-  };
-
-  return (
-    <input
-      type="string"
-      placeholder="DD/MM/YYYY"
-      value={data}
-      onChange={handleOnchange}
-    />
-  );
+  className?: string;
 };
 
-export const DateInputV1 = ({ date, onDateChange }: DateInputProps) => {
+const DateInput = ({
+  date,
+  onDateChange,
+  disabled,
+  className,
+}: DateInputProps) => {
   const [day, setDay] = React.useState<string>("");
   const [month, setMonth] = React.useState<string>("");
   const [year, setYear] = React.useState<string>("");
-
-  const [focusAt, setFocusAt] = React.useState<"day" | "month" | "year" | null>(
-    null
-  );
 
   const dayRef = React.useRef<HTMLInputElement>(null);
   const monthRef = React.useRef<HTMLInputElement>(null);
@@ -80,103 +33,132 @@ export const DateInputV1 = ({ date, onDateChange }: DateInputProps) => {
     }
   }, [date]);
 
-  React.useEffect(() => {
-    if (day.length == 2 && month.length == 2 && year.length == 4) {
-      if (onDateChange) onDateChange(`${day}/${month}/${year}`);
+  const handleSetOnChange = (day: string, month: string, year: string) => {
+    if (
+      onDateChange &&
+      day.length == 2 &&
+      month.length == 2 &&
+      year.length == 4
+    ) {
+      onDateChange(`${day}/${month}/${year}`);
     }
-  }, [day, month, year, onDateChange]);
+  };
 
-  const handleOnChange =
-    (type: "day" | "month" | "year") =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      const dayRegex = /^([0-3]?|0[1-9]|[1-2][0-9]|[3][0-1])$/;
-      const monthRegex = /^([01]?|0[1-9]|1[0-2])$/;
-      const yearRegex = /^\d{0,4}$/;
-      if (type === "day" && !dayRegex.test(value)) return;
-      if (type === "month" && !monthRegex.test(value)) return;
-      if (type === "year" && !yearRegex.test(value)) return;
-
-      if (type === "day") {
-        setDay(value);
-        if (value.length === 2) {
-          setFocusAt("month");
-          if (month.length === 2) {
-            setMonth("");
-          }
-        }
-      } else if (type === "month") {
-        setMonth(value);
-        if (value.length === 2) {
-          setFocusAt("year");
-          if (year.length === 4) {
-            setYear("");
-          }
-        }
-      } else {
-        setYear(value);
-        if (value.length === 4) {
-          yearRef.current?.blur();
-          setFocusAt(null);
+  const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const dayRegex = /^([0-3]?|0[1-9]|[1-2][0-9]|[3][0-1])$/;
+    if (dayRegex.test(value)) {
+      if (value.length === 2) {
+        monthRef.current?.focus();
+        if (month.length === 2) {
+          setMonth("");
+          handleSetOnChange(value, "", year);
+        } else {
+          handleSetOnChange(value, month, year);
         }
       }
-    };
-
-  React.useEffect(() => {
-    if (focusAt === "day") {
-      dayRef.current?.focus();
-    } else if (focusAt === "month") {
-      monthRef.current?.focus();
-    } else if (focusAt === "year") {
-      yearRef.current?.focus();
+      setDay(value);
     }
-  }, [focusAt]);
+  };
+
+  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const monthRegex = /^([01]?|0[1-9]|1[0-2])$/;
+    if (monthRegex.test(value)) {
+      if (value.length === 2) {
+        yearRef.current?.focus();
+        if (year.length === 4) {
+          setYear("");
+          handleSetOnChange(day, value, "");
+        } else {
+          handleSetOnChange(day, value, year);
+        }
+      }
+      setMonth(value);
+    }
+  };
+
+  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const yearRegex = /^\d{0,4}$/;
+    if (yearRegex.test(value)) {
+      if (value.length === 4) {
+        yearRef.current?.blur();
+        handleSetOnChange(day, month, value);
+      }
+      setYear(value);
+    }
+  };
 
   return (
     <div
-      // onClick={() => {
-      //   if (focusAt === null) {
-      //     setFocusAt("day");
-      //   }
-      // }}
-      className="inline-flex gap-1 px-3 py-2 items-center border border-gray-300 rounded-md p-1 align-middle text-center h-10"
+      className={cn(
+        "flex gap-1 px-3 py-2 items-center border border-gray-300 rounded-md p-1 align-middle text-center h-10",
+        disabled ? "cursor-not-allowed" : "",
+        className
+      )}
     >
       <input
+        disabled={disabled}
+        onClick={() => {
+          setDay("");
+          if (onDateChange) onDateChange("");
+        }}
         ref={dayRef}
         type="text"
-        className="w-8 outline-none"
+        className="w-5 outline-none placeholder:text-sm disabled:cursor-not-allowed"
         placeholder="DD"
         value={day}
-        onChange={handleOnChange("day")}
+        onChange={handleDayChange}
       />
       <span>/</span>
       <input
+        disabled={disabled}
+        onClick={() => {
+          if (day == "" && month == "" && year == "") {
+            dayRef.current?.focus();
+          } else {
+            setMonth("");
+            if (onDateChange) onDateChange("");
+          }
+        }}
         ref={monthRef}
         type="text"
-        className="w-8 outline-none"
+        className=" w-6 outline-none placeholder:text-sm disabled:cursor-not-allowed"
         placeholder="MM"
         value={month}
-        onChange={handleOnChange("month")}
+        onChange={handleMonthChange}
         onKeyDown={(e) => {
           if (e.key === "Backspace" && e.currentTarget.value.length === 0) {
-            setFocusAt("day");
+            dayRef.current?.focus();
           }
         }}
       />
       <span>/</span>
       <input
+        disabled={disabled}
+        onClick={() => {
+          if (day == "" && month == "" && year == "") {
+            dayRef.current?.focus();
+          } else {
+            setYear("");
+            if (onDateChange) onDateChange("");
+          }
+        }}
         ref={yearRef}
         type="text"
-        className="w-12 outline-none"
+        className="w-full outline-none placeholder:text-sm disabled:cursor-not-allowed"
         value={year}
         placeholder="YYYY"
-        onChange={handleOnChange("year")}
+        onChange={handleYearChange}
         onKeyDown={(e) => {
           if (e.key === "Backspace" && e.currentTarget.value.length === 0) {
-            setFocusAt("month");
+            monthRef.current?.focus();
           }
         }}
       />
     </div>
   );
 };
+
+export default DateInput;
