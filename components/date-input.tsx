@@ -56,7 +56,7 @@ export const DateInput = ({ date, onDateChange }: DateInputProps) => {
   );
 };
 
-export const DateInputV1 = ({}: DateInputProps) => {
+export const DateInputV1 = ({ date, onDateChange }: DateInputProps) => {
   const [day, setDay] = React.useState<string>("");
   const [month, setMonth] = React.useState<string>("");
   const [year, setYear] = React.useState<string>("");
@@ -69,28 +69,57 @@ export const DateInputV1 = ({}: DateInputProps) => {
   const monthRef = React.useRef<HTMLInputElement>(null);
   const yearRef = React.useRef<HTMLInputElement>(null);
 
+  React.useEffect(() => {
+    const fullDateRegex =
+      /^(0[1-9]|[1-2][0-9]|[3][0-1])\/(0[1-9]|1[0-2])\/(\d{4})$/;
+    if (date && fullDateRegex.test(date)) {
+      const [day, month, year] = date.split("/");
+      setDay(day);
+      setMonth(month);
+      setYear(year);
+    }
+  }, [date]);
+
+  React.useEffect(() => {
+    if (day.length == 2 && month.length == 2 && year.length == 4) {
+      if (onDateChange) onDateChange(`${day}/${month}/${year}`);
+    }
+  }, [day, month, year, onDateChange]);
+
   const handleOnChange =
     (type: "day" | "month" | "year") =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      //   if (!/[0-9]/.test(e.key)) return;
-      //   if (type === "day") {
-      //     if (day.length === 2) {
-      //       setFocusAt("month");
-      //       monthRef.current?.focus();
-      //     } else {
-      //       setDay(day + e.key);
-      //     }
-      //   } else if (type === "month") {
-      //     if (month.length === 2) {
-      //       setFocusAt("year");
-      //       yearRef.current?.focus();
-      //     } else {
-      //       setMonth(month + e.key);
-      //     }
-      //   } else {
-      //     if (year.length === 4) return;
-      //     setYear(year + e.key);
-      //   }
+      const value = e.target.value;
+      const dayRegex = /^([0-3]?|0[1-9]|[1-2][0-9]|[3][0-1])$/;
+      const monthRegex = /^([01]?|0[1-9]|1[0-2])$/;
+      const yearRegex = /^\d{0,4}$/;
+      if (type === "day" && !dayRegex.test(value)) return;
+      if (type === "month" && !monthRegex.test(value)) return;
+      if (type === "year" && !yearRegex.test(value)) return;
+
+      if (type === "day") {
+        setDay(value);
+        if (value.length === 2) {
+          setFocusAt("month");
+          if (month.length === 2) {
+            setMonth("");
+          }
+        }
+      } else if (type === "month") {
+        setMonth(value);
+        if (value.length === 2) {
+          setFocusAt("year");
+          if (year.length === 4) {
+            setYear("");
+          }
+        }
+      } else {
+        setYear(value);
+        if (value.length === 4) {
+          yearRef.current?.blur();
+          setFocusAt(null);
+        }
+      }
     };
 
   React.useEffect(() => {
@@ -105,17 +134,17 @@ export const DateInputV1 = ({}: DateInputProps) => {
 
   return (
     <div
-      onClick={() => {
-        if (focusAt === null) {
-          setFocusAt("day");
-        }
-      }}
-      className="inline-flex items-center border border-gray-300 rounded-md p-1"
+      // onClick={() => {
+      //   if (focusAt === null) {
+      //     setFocusAt("day");
+      //   }
+      // }}
+      className="inline-flex gap-1 px-3 py-2 items-center border border-gray-300 rounded-md p-1 align-middle text-center h-10"
     >
       <input
         ref={dayRef}
         type="text"
-        className="w-5 outline-none"
+        className="w-8 outline-none"
         placeholder="DD"
         value={day}
         onChange={handleOnChange("day")}
@@ -124,19 +153,29 @@ export const DateInputV1 = ({}: DateInputProps) => {
       <input
         ref={monthRef}
         type="text"
-        className="w-5 outline-none"
+        className="w-8 outline-none"
         placeholder="MM"
         value={month}
         onChange={handleOnChange("month")}
+        onKeyDown={(e) => {
+          if (e.key === "Backspace" && e.currentTarget.value.length === 0) {
+            setFocusAt("day");
+          }
+        }}
       />
       <span>/</span>
       <input
         ref={yearRef}
         type="text"
-        className="w-10 outline-none"
+        className="w-12 outline-none"
         value={year}
         placeholder="YYYY"
         onChange={handleOnChange("year")}
+        onKeyDown={(e) => {
+          if (e.key === "Backspace" && e.currentTarget.value.length === 0) {
+            setFocusAt("month");
+          }
+        }}
       />
     </div>
   );

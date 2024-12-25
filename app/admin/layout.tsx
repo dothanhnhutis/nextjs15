@@ -60,7 +60,7 @@ const AdminLayout = async ({
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild className="[&>svg]:size-6 h-auto">
                     <Link
-                      href={"/admin/tv"}
+                      href={"/admin/displays"}
                       className={cn("flex items-center", "hover:bg-accent")}
                     >
                       <MonitorIcon className="shrink-0" />

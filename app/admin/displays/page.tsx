@@ -1,5 +1,12 @@
 import { filterDisplaysService } from "@/services/display.service";
-import { PlusIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
+  MoreHorizontalIcon,
+  PlusIcon,
+} from "lucide-react";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import React from "react";
@@ -7,13 +14,6 @@ import DisplayItem from "./display-item";
 import { Metadata } from "next";
 import { updateDisplayAction } from "./actions";
 import DisplayFilter from "./display-filter";
-
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { caculatorPagination, cn } from "@/lib/utils";
 
 type DisplayPageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -63,72 +64,76 @@ const DisplayPage = async (props: DisplayPageProps) => {
           <DisplayItem key={d.id} data={d} action={updateDisplayAction} />
         ))}
       </div>
-      <div className="flex items-center justify-between px-2 mx-auto max-w-screen-lg">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {10} of {10} row(s) selected.
+      <div className="flex items-center justify-between mt-2">
+        <div className="flex items-center justify-center text-sm font-medium ">
+          0 of 10 row(s) selected.
         </div>
-        <div className="flex items-center space-x-6 lg:space-x-8">
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Rows per page</p>
-            <Select
-            // value={`${table.getState().pagination.pageSize}`}
-            // onValueChange={(value) => {
-            //   table.setPageSize(Number(value))
-            // }}
-            >
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={10} />
-              </SelectTrigger>
-              <SelectContent side="top">
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <SelectItem key={pageSize} value={`${pageSize}`}>
-                    {pageSize}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-            Page {1} of {10}
-          </div>
+        <div className="flex items-center gap-2">
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              // onClick={() => table.setPageIndex(0)}
-              // disabled={!table.getCanPreviousPage()}
+              className="h-8 w-8 p-0 md:hidden"
+              disabled={false}
             >
               <span className="sr-only">Go to first page</span>
-              <ChevronsLeft />
+              <ChevronsLeftIcon className="h-4 w-4" />
             </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              // onClick={() => table.previousPage()}
-              // disabled={!table.getCanPreviousPage()}
-            >
+            <Button variant="outline" className="h-8 w-8 p-0" disabled={false}>
               <span className="sr-only">Go to previous page</span>
-              <ChevronLeft />
+              <ChevronLeftIcon className="h-4 w-4" />
             </Button>
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              // onClick={() => table.nextPage()}
-              // disabled={!table.getCanNextPage()}
-            >
+            {caculatorPagination({
+              totalPage: 10,
+              currentPage: 1,
+            }).map((p) =>
+              p != -1 ? (
+                <Button
+                  key={p}
+                  variant="outline"
+                  className={cn(
+                    "h-8 w-8 p-0",
+                    1 == p ? "border-primary" : "hidden md:block"
+                  )}
+                >
+                  <span>{p}</span>
+                </Button>
+              ) : (
+                <div
+                  key={p}
+                  className="h-8 w-8 cursor-not-allowed border rounded-lg md:flex justify-center bg-background opacity-50 items-center hidden"
+                >
+                  <span className="sr-only">More pages</span>
+                  <MoreHorizontalIcon className="h-4 w-4" />
+                </div>
+              )
+            )}
+
+            <Button variant="outline" className="h-8 w-8 p-0" disabled={false}>
               <span className="sr-only">Go to next page</span>
-              <ChevronRight />
+              <ChevronRightIcon className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              // onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              // disabled={!table.getCanNextPage()}
+              className="h-8 w-8 p-0 md:hidden"
+              disabled={false}
             >
               <span className="sr-only">Go to last page</span>
-              <ChevronsRight />
+              <ChevronsRightIcon className="h-4 w-4" />
             </Button>
           </div>
+
+          <Select value={`${50}`}>
+            <SelectTrigger className="h-8">
+              <SelectValue placeholder={"10 / page"} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {[10, 20, 30, 40, 50].map((pageSize) => (
+                <SelectItem key={pageSize} value={`${pageSize}`}>
+                  {pageSize} / page
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </main>

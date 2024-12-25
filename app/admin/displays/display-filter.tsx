@@ -233,7 +233,7 @@ const DisplayFilter = () => {
         </button>
       </PopoverTrigger>
       <PopoverContent side="bottom" align="end" className="w-80 p-0">
-        <DateInputV1 />
+        <DateInputV1 date="31/10/1999" onDateChange={(e) => console.log(e)} />
         <form onSubmit={handleSubmit}>
           <h4 className="font-medium leading-none p-2">Bộ lọc</h4>
           <Separator className="my-2" />
