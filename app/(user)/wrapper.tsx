@@ -105,7 +105,10 @@ const WrapperUserSiderbar = ({
             >
               <MenuIcon className="size-6 shrink-0 " />
             </button>
-            <Link href={"/"} className="pl-3 pr-2 shrink-0">
+            <Link
+              href={"/"}
+              className="pl-3 pr-2 shrink-0 hidden sm:inline-block"
+            >
               <Image
                 src="/logo.png"
                 alt="logo.png"

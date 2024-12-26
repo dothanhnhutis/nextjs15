@@ -3,7 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "sonner";
-import { getCurrentUser } from "@/services/users.service";
+import {
+  getCurrentSessionService,
+  getCurrentUser,
+} from "@/services/users.service";
 import { cookies } from "next/headers";
 
 const geistSans = Geist({
@@ -36,12 +39,20 @@ export default async function RootLayout({
       Cookie: allCookie,
     },
   });
+
+  const session = await getCurrentSessionService({
+    headers: {
+      Cookie: allCookie,
+    },
+  });
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable}  font-sans antialiased`}
       >
-        <AuthProvider initUser={user}>{children}</AuthProvider>
+        <AuthProvider initUser={user} initSession={session}>
+          {children}
+        </AuthProvider>
         <Toaster visibleToasts={5} richColors />
       </body>
     </html>

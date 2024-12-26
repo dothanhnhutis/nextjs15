@@ -61,3 +61,28 @@ export type UserToken = {
   type: "emailVerification" | "recover" | "reActivate";
   session: string;
 };
+
+export type UserSession = {
+  id: string;
+  userId: string;
+  cookie: {
+    path: string;
+    httpOnly: boolean;
+    secure: boolean;
+    expires: string;
+  };
+  reqInfo: {
+    ip: string;
+    userAgentRaw: string;
+    userAgent: {
+      ua: string;
+      browser: Record<string, string>;
+      cpu: Record<string, string>;
+      device: Record<string, string>;
+      engine: Record<string, string>;
+      os: Record<string, string>;
+    };
+    lastAccess: "2024-12-24T03:48:55.551Z";
+    createAt: "2024-12-21T00:53:47.053Z";
+  };
+};

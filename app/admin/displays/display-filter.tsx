@@ -101,8 +101,8 @@ const DisplayFilter = () => {
       }
     }
 
-    if (searchParams.has("take")) {
-      newSearchParams.append("take", searchParams.get("take")!);
+    if (searchParams.has("limit")) {
+      newSearchParams.append("limit", searchParams.get("limit")!);
     }
 
     if (searchParams.has("page")) {
@@ -174,7 +174,7 @@ const DisplayFilter = () => {
   }, [createdAt.value]);
 
   React.useEffect(() => {
-    handleReset();
+    if (open) handleReset();
   }, [open]);
 
   return (

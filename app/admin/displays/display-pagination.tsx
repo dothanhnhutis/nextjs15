@@ -17,38 +17,51 @@ import {
 } from "lucide-react";
 import { caculatorPagination, cn } from "@/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+const STEP_PREV_NEXT = 10;
 const DisplayPagination = (pagination: {
-  count: number;
-  page: number;
-  hasNext: boolean;
-  totalPages: number;
+  hasNextPage: number;
+  totalPage: number;
+  totalItem: number;
 }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [take, setTake] = React.useState(10);
+  const [limit, setLimit] = React.useState(10);
+  const currentPage = searchParams.get("page") || "1";
+  const page = parseInt(currentPage);
 
   React.useEffect(() => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    const take = newSearchParams.get("take");
-    setTake(take ? parseInt(take) : 10);
-  }, [take, searchParams]);
+    const take = newSearchParams.get("limit");
+    setLimit(take ? parseInt(take) : 10);
+  }, [limit, searchParams]);
 
   return (
     <div className="flex items-center justify-between my-2">
       <div className="flex items-center justify-center text-sm font-medium ">
-        {`${(pagination.page - 1) * 1 + 1} - ${Math.min(
-          pagination.page * 1,
-          pagination.count
+        {`${(page - 1) * limit + 1} - ${Math.min(
+          page * limit,
+          pagination.totalItem
         )} trong số
-    ${pagination.count}`}
+    ${pagination.totalItem}`}
       </div>
       <div className="flex items-center gap-2">
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             className="h-8 w-8 p-0 md:hidden"
-            disabled={false}
+            disabled={page == 1}
+            onClick={() => {
+              const newSearchParams = new URLSearchParams(
+                searchParams.toString()
+              );
+              newSearchParams.set(
+                "page",
+                Math.max(1, page - STEP_PREV_NEXT).toString()
+              );
+              router.push(pathname + "?" + newSearchParams.toString());
+            }}
           >
             <span className="sr-only">Go to first page</span>
             <ChevronsLeftIcon className="h-4 w-4" />
@@ -56,12 +69,12 @@ const DisplayPagination = (pagination: {
           <Button
             variant="outline"
             className="h-8 w-8 p-0"
-            disabled={pagination.page == 1}
+            disabled={page == 1}
             onClick={() => {
               const newSearchParams = new URLSearchParams(
                 searchParams.toString()
               );
-              newSearchParams.set("page", (pagination.page - 1).toString());
+              newSearchParams.set("page", (page - 1).toString());
               router.push(pathname + "?" + newSearchParams.toString());
             }}
           >
@@ -69,8 +82,8 @@ const DisplayPagination = (pagination: {
             <ChevronLeftIcon className="h-4 w-4" />
           </Button>
           {caculatorPagination({
-            totalPage: pagination.totalPages,
-            currentPage: pagination.page,
+            totalPage: pagination.totalPage,
+            currentPage: page,
           }).map((p) =>
             p != -1 ? (
               <Button
@@ -85,7 +98,7 @@ const DisplayPagination = (pagination: {
                 variant="outline"
                 className={cn(
                   "h-8 w-8 p-0",
-                  pagination.page == p ? "border-primary" : "hidden md:block"
+                  page == p ? "border-primary" : "hidden md:block"
                 )}
               >
                 <span>{p}</span>
@@ -104,12 +117,12 @@ const DisplayPagination = (pagination: {
           <Button
             variant="outline"
             className="h-8 w-8 p-0"
-            disabled={!pagination.hasNext}
+            disabled={!pagination.hasNextPage}
             onClick={() => {
               const newSearchParams = new URLSearchParams(
                 searchParams.toString()
               );
-              newSearchParams.set("page", (pagination.page + 1).toString());
+              newSearchParams.set("page", (page + 1).toString());
               router.push(pathname + "?" + newSearchParams.toString());
             }}
           >
@@ -119,7 +132,17 @@ const DisplayPagination = (pagination: {
           <Button
             variant="outline"
             className="h-8 w-8 p-0 md:hidden"
-            disabled={false}
+            disabled={!pagination.hasNextPage}
+            onClick={() => {
+              const newSearchParams = new URLSearchParams(
+                searchParams.toString()
+              );
+              newSearchParams.set(
+                "page",
+                Math.min(pagination.totalPage, page + STEP_PREV_NEXT).toString()
+              );
+              router.push(pathname + "?" + newSearchParams.toString());
+            }}
           >
             <span className="sr-only">Go to last page</span>
             <ChevronsRightIcon className="h-4 w-4" />
@@ -127,12 +150,12 @@ const DisplayPagination = (pagination: {
         </div>
 
         <Select
-          value={`${take}`}
+          value={`${limit}`}
           onValueChange={(v) => {
             const newSearchParams = new URLSearchParams(
               searchParams.toString()
             );
-            newSearchParams.set("take", v.toString());
+            newSearchParams.set("limit", v.toString());
             router.push(pathname + "?" + newSearchParams.toString());
           }}
         >

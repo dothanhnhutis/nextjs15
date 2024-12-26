@@ -9,6 +9,7 @@ import { updateDisplayAction } from "./actions";
 import DisplayFilter from "./display-filter";
 import DisplaySort from "./display-sort";
 import DisplayPagination from "./display-pagination";
+import { redirect } from "next/navigation";
 
 type DisplayPageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -21,6 +22,11 @@ export const metadata: Metadata = {
 const DisplayPage = async (props: DisplayPageProps) => {
   const cookieStore = await cookies();
   const searchParams = await props.searchParams;
+  if (Object.keys(searchParams).length == 0) {
+    redirect(
+      "/admin/displays?enable=true&orderBy=priority.asc&limit=10&page=1"
+    );
+  }
   const {
     data: { displays, pagination },
   } = await filterDisplaysService(searchParams, {
@@ -47,14 +53,16 @@ const DisplayPage = async (props: DisplayPageProps) => {
       </div>
       <div className="grid gap-2 mt-2 pb-4">
         {displays.length > 0 ? (
-          displays.map((d) => (
-            <DisplayItem key={d.id} data={d} action={updateDisplayAction} />
-          ))
+          <>
+            {displays.map((d) => (
+              <DisplayItem key={d.id} data={d} action={updateDisplayAction} />
+            ))}
+            <DisplayPagination {...pagination} />
+          </>
         ) : (
           <p className="text-lg text-center">Không có dữ liệu</p>
         )}
       </div>
-      <DisplayPagination {...pagination} />
     </main>
   );
 };

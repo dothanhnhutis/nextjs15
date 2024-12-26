@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
-import { User } from "@/schema/user.schema";
+import { User, UserSession } from "@/schema/user.schema";
 import { changeEmail, signOut } from "@/services/users.service";
 
 type AuthContext = {
   currentUser: User | null;
+  currentSession: UserSession | null;
   signOut: () => Promise<void>;
   changeEmail: (email: string) => Promise<void>;
 };
@@ -21,13 +22,13 @@ export const useAuth = () => {
 
 export const AuthProvider = ({
   initUser,
+  initSession,
   children,
 }: {
   initUser: User | null;
+  initSession: UserSession | null;
   children: React.ReactNode;
 }) => {
-  React.useEffect(() => {}, []);
-
   const handleSignOut = async () => {
     if (!initUser) return;
     await signOut();
@@ -35,7 +36,6 @@ export const AuthProvider = ({
 
   const handleChangeEmail = async (email: string) => {
     await changeEmail(email);
-    
   };
 
   return (
@@ -44,6 +44,7 @@ export const AuthProvider = ({
         currentUser: initUser,
         signOut: handleSignOut,
         changeEmail: handleChangeEmail,
+        currentSession: initSession,
       }}
     >
       {children}

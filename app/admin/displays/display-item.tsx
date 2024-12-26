@@ -80,7 +80,7 @@ const DisplayItem = ({
         </div>
         <div className="flex items-center gap-3">
           <p className="text-sm text-muted-foreground">
-            {`enable: ${data.enable}`}
+            {!data.enable ? "Ẩn" : "Hiện"}
           </p>
           <p className="text-sm text-muted-foreground">
             {`Ưu tiên: ${data.priority}`}

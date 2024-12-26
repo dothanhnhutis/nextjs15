@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn, fileToBase64 } from "@/lib/utils";
 import { BoxesIcon, ImageIcon } from "lucide-react";
-import SmartInputIntNumber from "@/components/smart-input";
+import IntInput from "@/components/int-input";
 
 export type ProductNodeData = {
   id: string;
@@ -86,17 +86,29 @@ export const AddProductBtn = ({ editor }: { editor: Editor }) => {
   });
 
   React.useEffect(() => {
-    if (open && !isSelected) {
-      setData({
-        id: "0",
-        name: "",
-        src: "",
-        amount: 0,
-        unit: "Sản Phẩm",
-        amountOfCargoBox: 0,
-      });
+    if (open) {
+      if (!isSelected) {
+        setData({
+          id: "0",
+          name: "",
+          src: "",
+          amount: 0,
+          unit: "Sản Phẩm",
+          amountOfCargoBox: 0,
+        });
+      } else {
+        const data = editor.getAttributes("product");
+        setData({
+          id: data.id,
+          name: data.name,
+          src: data.src,
+          amount: parseInt(data.amount, 10),
+          unit: data.unit,
+          amountOfCargoBox: parseInt(data.amountOfCargoBox, 10),
+        });
+      }
     }
-  }, [isSelected, open]);
+  }, [editor, isSelected, open]);
 
   const handleAddProduct = () => {
     editor.commands.addProduct(data);
@@ -281,16 +293,23 @@ export const AddProductBtn = ({ editor }: { editor: Editor }) => {
                   data.unit == "Thùng" ? "gap-2 basis-4/6" : "w-full"
                 )}
               >
-                <SmartInputIntNumber
+                <IntInput
+                  className="px-3 py-2 border rounded-md flex h-10 w-full"
                   value={data.amount.toString()}
-                  onInputChange={(v) => {
+                  onChange={(v) => {
+                    let newV = v;
+                    if (v == "" || isNaN(parseInt(v)) || parseInt(v) < 0) {
+                      newV = "0";
+                    }
+
                     setData((prev) => ({
                       ...prev,
-                      amount: parseInt(v),
+                      amount: parseInt(newV),
                     }));
                   }}
                   placeholder="Thùng"
                 />
+
                 {data.unit == "Thùng" && (
                   <p className="flex shrink-0 text-sm">Thùng</p>
                 )}
@@ -301,16 +320,22 @@ export const AddProductBtn = ({ editor }: { editor: Editor }) => {
                     x
                   </span>
                   <div className="flex items-center gap-2 basis-4/6">
-                    <SmartInputIntNumber
+                    <IntInput
+                      className="px-3 py-2 border rounded-md flex h-10 w-full"
                       value={data.amountOfCargoBox.toString()}
-                      onInputChange={(v) => {
+                      onChange={(v) => {
+                        let newV = v;
+                        if (v == "" || isNaN(parseInt(v)) || parseInt(v) < 0) {
+                          newV = "0";
+                        }
                         setData((prev) => ({
                           ...prev,
-                          amountOfCargoBox: parseInt(v),
+                          amountOfCargoBox: parseInt(newV),
                         }));
                       }}
                       placeholder="Sản phẩm"
                     />
+
                     <p className="flex shrink-0 text-sm">Sản phẩm</p>
                   </div>
                 </>

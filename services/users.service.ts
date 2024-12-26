@@ -1,6 +1,6 @@
 import envs from "@/configs/envs";
 import { FetchApi } from "./fetch-api";
-import { UpdateProfile, User } from "@/schema/user.schema";
+import { UpdateProfile, User, UserSession } from "@/schema/user.schema";
 
 const userInstance = new FetchApi({
   baseUrl: envs.NEXT_PUBLIC_SERVER_URL + "/api/v1/users",
@@ -50,5 +50,46 @@ export async function updateProfile(input: UpdateProfile) {
     await userInstance.put("", input);
   } catch (error) {
     console.log("updateProfile method error:", error);
+  }
+}
+
+export async function getSessionsService(options?: Omit<RequestInit, "body">) {
+  try {
+    const { data } = await userInstance.get<UserSession[]>(
+      "/sessions",
+      options
+    );
+    return data;
+  } catch (error) {
+    console.log("getSessionsService method error:", error);
+    return [];
+  }
+}
+
+export async function getCurrentSessionService(
+  options?: Omit<RequestInit, "body">
+) {
+  try {
+    const { data } = await userInstance.get<UserSession>(
+      "/sessions/me",
+      options
+    );
+    return data;
+  } catch (error) {
+    console.log("getCurrentSessionService method error:", error);
+    return null;
+  }
+}
+
+export async function deleteSessionByIdService(
+  sessionId: string,
+  options?: Omit<RequestInit, "body">
+) {
+  try {
+    await userInstance.delete("/sessions/" + sessionId, options);
+    return true;
+  } catch (error) {
+    console.log("deleteSessionByIdService method error:", error);
+    return false;
   }
 }

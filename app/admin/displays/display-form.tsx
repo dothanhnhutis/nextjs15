@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LoaderCircleIcon, XIcon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import SmartInputIntNumber from "@/components/smart-input";
 import DisplayEditor from "@/components/tiptap/display-editor";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { createDisplayAction, updateDisplayAction } from "./actions";
+import IntInput from "@/components/int-input";
 const SelectDepartment = ({
   departments = [],
   selectedDefault,
@@ -53,7 +53,7 @@ const SelectDepartment = ({
           type="button"
           className="inline-flex px-2 py-1 gap-1 rounded-full border disabled:opacity-50"
         >
-          <p className="text-sm">Thêm</p>
+          <p className="text-sm">Chọn</p>
         </button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -247,16 +247,25 @@ const DisplayForm = ({ departments = [], ...props }: DisplayFormProps) => {
             <p className="w-full">
               Mức độ ưu tiên cao thì sẽ được đẩy lên trên [0-99]
             </p>
-            <SmartInputIntNumber
+
+            <IntInput
               disabled={isPending}
-              className="w-16"
+              className="w-16 border px-3 py-2 rounded-md text-black block"
               value={formData.priority.toString()}
-              onInputChange={(v) =>
+              onChange={(v) => {
+                let newV = v;
+                if (v == "" || parseInt(v) < 0) {
+                  newV = "0";
+                }
+                if (parseInt(v) > 99) {
+                  newV = "99";
+                }
+
                 setFormData((prev) => ({
                   ...prev,
-                  priority: parseInt(v),
-                }))
-              }
+                  priority: parseInt(newV),
+                }));
+              }}
             />
           </div>
         </div>

@@ -49,10 +49,9 @@ export const filterDisplaysService = async (
   return await displayInstance.get<{
     displays: Display[];
     pagination: {
-      count: number;
-      page: number;
-      hasNext: boolean;
-      totalPages: number;
+      hasNextPage: number;
+      totalPage: number;
+      totalItem: number;
     };
   }>(data.length > 0 ? "/displays?" + data.join("&") : "/displays", options);
 };

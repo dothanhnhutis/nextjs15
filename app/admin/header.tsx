@@ -47,7 +47,7 @@ const AdminHeader = () => {
         <div className="flex items-center justify-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger className="outline-none" asChild>
-              <div className="p-1  hover:bg-blue-100 rounded-full cursor-pointer">
+              <div className="p-1 hover:bg-blue-100 rounded-full cursor-pointer">
                 <Avatar className="size-8">
                   <AvatarImage
                     referrerPolicy="no-referrer"
@@ -87,21 +87,20 @@ const AdminHeader = () => {
               <DropdownMenuSeparator />
 
               <DropdownMenuItem asChild>
-                <Link
-                  href="/settings/profile"
-                  className="cursor-pointer h-[34px]"
-                >
+                <Link href="/profile" className="cursor-pointer h-[34px]">
                   <span className="font-medium">Hồ sơ</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link
-                  href="/settings/security"
-                  className="cursor-pointer h-[34px]"
-                >
+              {/* <DropdownMenuItem asChild>
+                <Link href="/security" className="cursor-pointer h-[34px]">
                   <span className="font-medium">Bảo mật</span>
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/security" className="cursor-pointer h-[34px]">
+                  <span className="font-medium">Bảo mật</span>
+                </Link>
+              </DropdownMenuItem> */}
 
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleSignOut}>

@@ -71,8 +71,8 @@ const DisplaySort = () => {
       newSearchParams.append("orderBy", p + "." + data.sort);
     }
 
-    if (searchParams.has("take")) {
-      newSearchParams.append("take", searchParams.get("take")!);
+    if (searchParams.has("limit")) {
+      newSearchParams.append("limit", searchParams.get("limit")!);
     }
 
     if (searchParams.has("page")) {
