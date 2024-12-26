@@ -12,12 +12,18 @@ import { Switch } from "@/components/ui/switch";
 import { SlidersHorizontalIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
+type SortData = {
+  [index: string]: {
+    include: boolean;
+    sort: "asc" | "desc";
+  };
+};
 const DisplaySort = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = React.useState<boolean>(false);
 
-  const [sortData, setSortData] = React.useState({
+  const [sortData, setSortData] = React.useState<SortData>({
     priority: {
       include: false,
       sort: "asc",
@@ -77,15 +83,10 @@ const DisplaySort = () => {
   }, [sortData]);
 
   const handleReset = () => {
-    const keys: (keyof typeof sortData)[] = [
-      "priority",
-      "enable",
-      "createdAt",
-      "updatedAt",
-    ];
+    const keys = ["priority", "enable", "createdAt", "updatedAt"];
     const searchParams = new URLSearchParams(window.location.search);
     const defaultData = searchParams.getAll("orderBy");
-    const newData = sortData;
+    const newData: SortData = {};
 
     for (const k of keys) {
       const has = defaultData.find((v) => v.startsWith(k));
@@ -93,6 +94,11 @@ const DisplaySort = () => {
         newData[k] = {
           include: true,
           sort: has.split(".")[1] as "asc" | "desc",
+        };
+      } else {
+        newData[k] = {
+          include: false,
+          sort: "asc",
         };
       }
     }
@@ -403,7 +409,7 @@ const DisplaySort = () => {
           </div>
           <Separator className="my-2" />
           <div className="flex justify-between gap-2 items-center px-2 pb-4">
-            <Button type="button" variant="outline">
+            <Button type="button" variant="outline" onClick={handleReset}>
               Đặt lại
             </Button>
             <Button>Áp dụng</Button>

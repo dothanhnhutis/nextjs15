@@ -46,10 +46,15 @@ export const filterDisplaysService = async (
       }
     }
   }
-  return await displayInstance.get<{ displays: Display[] }>(
-    data.length > 0 ? "/displays?" + data.join("&") : "/displays",
-    options
-  );
+  return await displayInstance.get<{
+    displays: Display[];
+    pagination: {
+      count: number;
+      page: number;
+      hasNext: boolean;
+      totalPages: number;
+    };
+  }>(data.length > 0 ? "/displays?" + data.join("&") : "/displays", options);
 };
 
 export const getDisplaysService = async (
