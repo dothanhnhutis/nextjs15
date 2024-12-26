@@ -85,11 +85,5 @@ export async function deleteSessionByIdService(
   sessionId: string,
   options?: Omit<RequestInit, "body">
 ) {
-  try {
-    await userInstance.delete("/sessions/" + sessionId, options);
-    return true;
-  } catch (error) {
-    console.log("deleteSessionByIdService method error:", error);
-    return false;
-  }
+  return await userInstance.delete("/sessions/" + sessionId, options);
 }

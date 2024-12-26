@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "Chỉnh sửa hiển thị",
 };
 
-const EditDisplayPage = async (props: { params: Awaited<{ id: string }> }) => {
+const EditDisplayPage = async (props: { params: Promise<{ id: string }> }) => {
   const params = await props.params;
   const cookieStore = await cookies();
   const cookie = cookieStore
@@ -34,7 +34,7 @@ const EditDisplayPage = async (props: { params: Awaited<{ id: string }> }) => {
   if (!display) return notFound();
 
   return (
-    <div className="mx-auto w-full max-w-screen-md px-4">
+    <div className="mx-auto w-full max-w-screen-md px-4 text">
       <h3 className="text-3xl font-bold">Chỉnh sửa hiển thị</h3>
       <DisplayForm
         departments={departments}

@@ -114,7 +114,9 @@ const DisplayFilter = () => {
   };
 
   const handleReset = () => {
-    const searchParams = new URLSearchParams(window.location.search);
+    const searchParams = new URLSearchParams(
+      typeof window != "undefined" ? window.location.search : ""
+    );
     const enable = searchParams.get("enable");
     const minPriority = searchParams.get("minPriority");
     const maxPriority = searchParams.get("maxPriority");

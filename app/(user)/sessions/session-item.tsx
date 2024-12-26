@@ -12,9 +12,15 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 const ipSchema = z.string().ip({ version: "v4" });
-const SessionItem = ({ session }: { session: UserSession }) => {
+const SessionItem = ({
+  session,
+  action,
+}: {
+  session: UserSession;
+  action: typeof deleteSessionByIdAction;
+}) => {
   const { currentSession } = useAuth();
-  const bindAction = deleteSessionByIdAction.bind(null, session.id);
+  const bindAction = action.bind(null, session.id);
 
   const [state, formAction, isPending] = React.useActionState<{
     success: boolean | null;
@@ -79,7 +85,9 @@ const SessionItem = ({ session }: { session: UserSession }) => {
           <p>Current Session</p>
         </div>
       ) : (
-        <Button variant="ghost">Revoke</Button>
+        <Button disabled={isPending} variant="ghost">
+          Revoke
+        </Button>
       )}
     </form>
   );

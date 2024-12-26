@@ -2,10 +2,12 @@
 import React from "react";
 import { User, UserSession } from "@/schema/user.schema";
 import { changeEmail, signOut } from "@/services/users.service";
+import { Policy } from "@/schema/policy.schema";
 
 type AuthContext = {
   currentUser: User | null;
   currentSession: UserSession | null;
+  policies: Policy[];
   signOut: () => Promise<void>;
   changeEmail: (email: string) => Promise<void>;
 };
@@ -23,10 +25,12 @@ export const useAuth = () => {
 export const AuthProvider = ({
   initUser,
   initSession,
+  initPolicies,
   children,
 }: {
   initUser: User | null;
   initSession: UserSession | null;
+  initPolicies: Policy[];
   children: React.ReactNode;
 }) => {
   const handleSignOut = async () => {
@@ -43,6 +47,7 @@ export const AuthProvider = ({
       value={{
         currentUser: initUser,
         signOut: handleSignOut,
+        policies: initPolicies,
         changeEmail: handleChangeEmail,
         currentSession: initSession,
       }}

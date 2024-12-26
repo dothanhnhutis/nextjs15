@@ -59,19 +59,29 @@ export const filterDisplaysService = async (
 export const getDisplaysService = async (
   options?: Omit<RequestInit, "body">
 ) => {
-  return await displayInstance.get<{ displays: Display[] }>(
-    "/displays",
-    options
-  );
+  try {
+    return await displayInstance.get<{ displays: Display[] }>(
+      "/displays",
+      options
+    );
+  } catch (error: unknown) {
+    console.log("getDisplaysService method error: ", error);
+    return [];
+  }
 };
 
 export const getDisplayByIdService = async (
   id: string,
   options?: Omit<RequestInit, "body">
 ) => {
-  const { data } = await displayInstance.get<Display | null>(
-    "/displays/" + id,
-    options
-  );
-  return data;
+  try {
+    const { data } = await displayInstance.get<Display | null>(
+      "/displays/" + id,
+      options
+    );
+    return data;
+  } catch (error: unknown) {
+    console.log("getDisplayByIdService method error: ", error);
+    return null;
+  }
 };

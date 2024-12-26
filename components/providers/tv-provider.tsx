@@ -1,7 +1,6 @@
 "use client";
 import envs from "@/configs/envs";
 import { createSocket } from "@/lib/socket";
-import { Department } from "@/services/department.service";
 import React from "react";
 import { Socket } from "socket.io-client";
 
@@ -16,6 +15,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { audioPath } from "@/configs/constants";
+import { Department } from "@/schema/department.schema";
 
 interface ITaskContext {
   connected: boolean;

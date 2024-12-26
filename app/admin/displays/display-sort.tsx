@@ -44,7 +44,9 @@ const DisplaySort = () => {
 
   const sort = React.useMemo(() => {
     const newSearchParams = new URLSearchParams();
-    const searchParams = new URLSearchParams(window.location.search);
+    const searchParams = new URLSearchParams(
+      typeof window != "undefined" ? window.location.search : ""
+    );
     const enable = searchParams.get("enable");
     const minPriority = searchParams.get("minPriority");
     const maxPriority = searchParams.get("maxPriority");
@@ -84,7 +86,9 @@ const DisplaySort = () => {
 
   const handleReset = () => {
     const keys = ["priority", "enable", "createdAt", "updatedAt"];
-    const searchParams = new URLSearchParams(window.location.search);
+    const searchParams = new URLSearchParams(
+      typeof window != "undefined" ? window.location.search : ""
+    );
     const defaultData = searchParams.getAll("orderBy");
     const newData: SortData = {};
 
