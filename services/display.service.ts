@@ -53,7 +53,29 @@ export const filterDisplaysService = async (
       totalPage: number;
       totalItem: number;
     };
-  }>(data.length > 0 ? "/displays?" + data.join("&") : "/displays", options);
+  }>(
+    data.length > 0 ? "/displays/search?" + data.join("&") : "/displays/search",
+    options
+  );
+};
+
+export const getDisplaysOfDepartment = async (
+  departmentId: string,
+  options?: Omit<RequestInit, "body">
+) => {
+  const { data } = await displayInstance.get<{
+    displays: Display[];
+    pagination: {
+      hasNextPage: number;
+      totalPage: number;
+      totalItem: number;
+    };
+  }>(
+    `/displays/search?enable=true&departmentId=${departmentId}&orderBy=priority.desc&orderBy=createdAt.desc`,
+    options
+  );
+
+  return data.displays;
 };
 
 export const getDisplaysService = async (

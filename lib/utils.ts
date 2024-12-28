@@ -53,3 +53,26 @@ export function caculatorPagination({
   }
   return result.filter((v, ix, arr) => v == -1 || arr.indexOf(v) === ix);
 }
+
+type SortOrder = "asc" | "desc";
+
+interface SortField<T> {
+  key: keyof T;
+  order?: SortOrder;
+}
+
+export function sortByFields<T>(data: T[], fields: SortField<T>[]): T[] {
+  return data.sort((a, b) => {
+    for (const field of fields) {
+      const { key, order = "asc" } = field;
+      const aValue = a[key];
+      const bValue = b[key];
+      const comparison = aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+
+      if (comparison !== 0) {
+        return order === "asc" ? comparison : -comparison;
+      }
+    }
+    return 0;
+  });
+}

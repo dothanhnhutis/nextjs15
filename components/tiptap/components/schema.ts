@@ -84,7 +84,14 @@ const ProductNode = TipTapNode.create({
           class:
             "hidden sm:block relative aspect-square size-[100px] rounded-md overflow-hidden shrink-0",
         },
-        ["img", { src: node.attrs.src, alt: node.attrs.name }],
+        [
+          "img",
+          {
+            src: node.attrs.src,
+            alt: node.attrs.name,
+            class: "h-full w-full object-cover",
+          },
+        ],
       ],
       [
         "div",

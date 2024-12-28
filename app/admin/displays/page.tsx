@@ -24,7 +24,7 @@ const DisplayPage = async (props: DisplayPageProps) => {
   const searchParams = await props.searchParams;
   if (Object.keys(searchParams).length == 0) {
     redirect(
-      "/admin/displays?enable=true&orderBy=priority.asc&limit=10&page=1"
+      "/admin/displays?enable=true&orderBy=priority.desc&orderBy=createdAt.desc&limit=10&page=1"
     );
   }
   const {
@@ -40,7 +40,7 @@ const DisplayPage = async (props: DisplayPageProps) => {
 
   return (
     <main className="max-w-screen-xl mx-auto px-2 w-full">
-      <div className="flex items-center gap-2 sticky right-0 top-[64px] z-10 bg-white ">
+      <div className="flex items-center gap-2 sticky right-0 top-[64px] z-10 bg-white">
         <h3 className="text-3xl font-bold w-full">Hiển Thị</h3>
         <DisplaySort />
         <DisplayFilter />

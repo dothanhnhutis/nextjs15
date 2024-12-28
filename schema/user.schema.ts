@@ -52,9 +52,16 @@ export type User = {
   picture: string | null;
   phoneNumber: string | null;
   birthDate: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   hasPassword: boolean;
+  roles: {
+    id: string;
+    name: string;
+    permissions: string[];
+    createdAt: string;
+    updatedAt: string;
+  }[];
 };
 
 export type UserToken = {

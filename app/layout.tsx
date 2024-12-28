@@ -8,7 +8,6 @@ import {
   getCurrentUser,
 } from "@/services/users.service";
 import { cookies } from "next/headers";
-import { getPoliciesService } from "@/services/policies.service";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,27 +40,20 @@ export default async function RootLayout({
     },
   });
 
+  console.log(user);
+
   const session = await getCurrentSessionService({
     headers: {
       Cookie: allCookie,
     },
   });
 
-  const policies = await getPoliciesService({
-    headers: {
-      Cookie: allCookie,
-    },
-  });
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable}  font-sans antialiased`}
       >
-        <AuthProvider
-          initUser={user}
-          initSession={session}
-          initPolicies={policies}
-        >
+        <AuthProvider initUser={user} initSession={session}>
           {children}
         </AuthProvider>
         <Toaster visibleToasts={5} richColors />

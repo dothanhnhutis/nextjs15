@@ -5,10 +5,10 @@ import { cn } from "@/lib/utils";
 import { PanelLeftIcon, VolumeOffIcon } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getDisplaysOfDepartment } from "@/services/department.service";
 import { format } from "date-fns";
 import { audioPath } from "@/configs/constants";
 import { Display } from "@/schema/display.schema";
+import { getDisplaysOfDepartment } from "@/services/display.service";
 
 const DisplayItem = ({ data }: { data: Display }) => {
   const [isNew, setIsNew] = React.useState<boolean>(false);

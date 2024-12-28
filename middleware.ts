@@ -14,7 +14,6 @@ import {
   privateRegexRoutes,
 } from "./routes";
 import { getCurrentUser } from "./services/users.service";
-// import { getPoliciesService } from "./services/policies.service";
 
 // function redirect(request: NextRequest, path?: string) {
 //   const { nextUrl, url } = request;
@@ -56,12 +55,6 @@ export async function middleware(request: NextRequest) {
       Cookie: allCookie,
     },
   });
-
-  // const policies = await getPoliciesService({
-  //   headers: {
-  //     Cookie: allCookie,
-  //   },
-  // });
 
   const isPrivateRoute = privateRegexRoutes.some((routes) =>
     routes.test(request.nextUrl.pathname)
