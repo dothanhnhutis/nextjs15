@@ -7,6 +7,19 @@ type FetchApiCoreOpts<T = unknown> = FetchApiOpts & {
   body?: T;
 };
 
+export class FetchApiError extends Error {
+  statusCode: number;
+  constructor(error: { message: string; statusCode: number }) {
+    super(error.message);
+    this.statusCode = error.statusCode;
+  }
+  serializeErrors() {
+    return {
+      message: this.message,
+    };
+  }
+}
+
 export class FetchApi {
   constructor(private options?: FetchApiOpts) {}
 
@@ -51,22 +64,8 @@ export class FetchApi {
     });
 
     if (!res.ok) {
-      const data: { message: string } = await res.json();
-
-      // if (res.status >= 500) {
-      //   throw new Error("Something went wrong");
-      // }
-      throw new Error(data.message);
-      //   if (res.status >= 500) {
-      //     throw new Error("Something went wrong");
-      //   }
-
-      //   const data = await res.json();
-      //   const result = {
-      //     headers: res.headers,
-      //     data,
-      //   };
-      //   return result;
+      const data: { message: string; statusCode: number } = await res.json();
+      throw new FetchApiError(data);
     }
     const data: T = await res.json();
     const result = {

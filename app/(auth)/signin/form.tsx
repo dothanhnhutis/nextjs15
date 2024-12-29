@@ -13,6 +13,7 @@ import {
   signInWithMFASchema,
 } from "@/schema/auth.schema";
 import { signIn, signInWithMFA } from "@/services/auth.service";
+import { FetchApiError } from "@/services/fetch-api";
 import { LoaderCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -25,7 +26,13 @@ type SignInFormProps = {
 export const SignInForm = ({ email }: SignInFormProps) => {
   const router = useRouter();
   const [signInIsPending, startSignIn] = React.useTransition();
-  const [signInError, setSignInError] = React.useState<boolean>(false);
+  const [signInError, setSignInError] = React.useState<{
+    error: null | boolean;
+    message: string;
+  }>({
+    error: null,
+    message: "",
+  });
   const [signInformData, setSignInFormData] = React.useState<SignIn>({
     email: email || "",
     password: "",
@@ -49,22 +56,42 @@ export const SignInForm = ({ email }: SignInFormProps) => {
   const handleSignInSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const parse = signInSchema.safeParse(signInformData);
+    if (signInformData.email == "" || signInformData.password == "") return;
+    setSignInError({
+      error: null,
+      message: "",
+    });
+    setSignInFormData({
+      email: "",
+      password: "",
+    });
 
-    if (!parse.success) return;
+    if (!parse.success) {
+      setSignInError({
+        error: true,
+        message: "Email và mật khẩu không hợp lệ",
+      });
+      return;
+    }
 
     startSignIn(async () => {
-      setSignInError(false);
-      setSignInFormData({
-        email: "",
-        password: "",
-      });
       try {
         await signIn(signInformData);
         router.push(DEFAULT_LOGIN_REDIRECT);
         router.refresh();
       } catch (error: unknown) {
-        console.log(error);
-        setSignInError(true);
+        if (error instanceof FetchApiError) {
+          setSignInError({
+            error: true,
+            message: error.message,
+          });
+        } else if (error instanceof TypeError) {
+          console.log(error.message);
+          setSignInError({
+            error: true,
+            message: "Email và mật khẩu không hợp lệ",
+          });
+        }
       }
     });
   };
@@ -149,9 +176,9 @@ export const SignInForm = ({ email }: SignInFormProps) => {
                   value={signInformData.password}
                   onChange={handleSignInOnChange}
                 />
-                {signInError && (
+                {signInError.error && (
                   <p className="text-red-500 text-xs font-bold">
-                    Email và mật khẩu không hợp lệ
+                    {signInError.message}
                   </p>
                 )}
               </div>

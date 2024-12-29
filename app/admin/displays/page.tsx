@@ -24,7 +24,7 @@ const DisplayPage = async (props: DisplayPageProps) => {
   const searchParams = await props.searchParams;
   if (Object.keys(searchParams).length == 0) {
     redirect(
-      "/admin/displays?enable=true&orderBy=priority.desc&orderBy=createdAt.desc&limit=10&page=1"
+      "/admin/displays?enable=true&orderBy=priority.desc&orderBy=updatedAt.desc&limit=10&page=1"
     );
   }
   const {

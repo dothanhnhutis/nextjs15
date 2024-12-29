@@ -1,34 +1,13 @@
 "use client";
 import { useAuth } from "@/components/providers/auth-provider";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns/format";
-import { Calendar, CalendarIcon, UserPenIcon } from "lucide-react";
 import React from "react";
 
 const UserPage = () => {
-  const date = new Date();
   const { currentUser } = useAuth();
 
   return (
-    // <div className="h-[2000px] w-full">
-    //   <div className="sticky top-[72px] right-0 w-full bg-white">sadsad</div>
-    // </div>
     <div className="mx-auto max-w-screen-lg w-full bg-white p-4">
       <div className="flex items-center justify-between gap-2">
         <div>
@@ -38,7 +17,7 @@ const UserPage = () => {
           </p>
         </div>
 
-        <AlertDialog>
+        {/* <AlertDialog>
           <AlertDialogTrigger asChild>
             <button className="flex gap-2 items-center justify-center rounded-lg px-2 py-1 hover:bg-accent hover:text-accent-foreground">
               <span className="hidden sm:inline text-base font-medium text-muted-foreground">
@@ -141,7 +120,7 @@ const UserPage = () => {
               </div>
             </div>
           </AlertDialogContent>
-        </AlertDialog>
+        </AlertDialog> */}
       </div>
       {/* <EditProfileForm />
     <EditPhoto /> */}

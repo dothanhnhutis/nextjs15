@@ -20,15 +20,15 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import {
   // BellIcon,
   CookieIcon,
-  CreditCardIcon,
+  // CreditCardIcon,
   LogOutIcon,
   LucideIcon,
   MailIcon,
-  MapPinIcon,
+  // MapPinIcon,
   MenuIcon,
   MonitorIcon,
-  SettingsIcon,
-  ShieldCheckIcon,
+  // SettingsIcon,
+  // ShieldCheckIcon,
   // ShoppingBagIcon,
   SquareUserRoundIcon,
 } from "lucide-react";
@@ -48,31 +48,31 @@ const sideBars: Omit<SideBarLinkProps, "isOpen" | "selected">[] = [
     Icon: SquareUserRoundIcon,
     title: "Profile",
   },
-  {
-    href: "/security",
-    Icon: ShieldCheckIcon,
-    title: "Security",
-  },
+  // {
+  //   href: "/security",
+  //   Icon: ShieldCheckIcon,
+  //   title: "Security",
+  // },
   {
     href: "/sessions",
     Icon: CookieIcon,
     title: "Sessions",
   },
-  {
-    href: "/",
-    Icon: MapPinIcon,
-    title: "Address",
-  },
-  {
-    href: "/",
-    Icon: CreditCardIcon,
-    title: "Payment method",
-  },
-  {
-    href: "/settings",
-    Icon: SettingsIcon,
-    title: "Settings",
-  },
+  // {
+  //   href: "/",
+  //   Icon: MapPinIcon,
+  //   title: "Address",
+  // },
+  // {
+  //   href: "/",
+  //   Icon: CreditCardIcon,
+  //   title: "Payment method",
+  // },
+  // {
+  //   href: "/settings",
+  //   Icon: SettingsIcon,
+  //   title: "Settings",
+  // },
 ];
 
 const WrapperUserSiderbar = ({
@@ -123,17 +123,19 @@ const WrapperUserSiderbar = ({
           </div>
 
           <div className="flex items-center justify-center gap-2">
-            <Button
-              aria-label="menu"
-              variant="ghost"
-              size="icon"
-              className="rounded-full p-1 hover:bg-blue-100 [&_svg]:size-6"
-              asChild
-            >
-              <Link prefetch href={"/admin"}>
-                <MonitorIcon className="shrink-0 text-gray-500" />
-              </Link>
-            </Button>
+            {currentUser && currentUser.roles.length > 0 && (
+              <Button
+                aria-label="menu"
+                variant="ghost"
+                size="icon"
+                className="rounded-full p-1 hover:bg-blue-100 [&_svg]:size-6"
+                asChild
+              >
+                <Link prefetch href={"/admin"}>
+                  <MonitorIcon className="shrink-0 text-gray-500" />
+                </Link>
+              </Button>
+            )}
             {/* <Button
               aria-label="menu"
               variant="ghost"
